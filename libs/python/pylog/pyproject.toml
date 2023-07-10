@@ -1,0 +1,29 @@
+[tool.coverage.run]
+branch = true
+source = [ "pylog" ]
+
+[tool.coverage.report]
+exclude_lines = ['if TYPE_CHECKING:']
+show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-fail-under=90 --cov-report html:'../../../coverage/libs/python/pylog/html' --cov-report xml:'../../../coverage/libs/python/pylog/coverage.xml' --html='../../../reports/libs/python/pylog/unittests/html/index.html' --junitxml='../../../reports/libs/python/pylog/unittests/junit.xml'"
+
+[tool.poetry]
+name = "pylog"
+version = "1.0.0"
+description = "Loggig"
+authors = [ ]
+license = 'Proprietary'
+readme = 'README.md'
+
+  [[tool.poetry.packages]]
+  include = "pylog"
+
+  [tool.poetry.dependencies]
+  python = ">=3.9,<3.11"
+  python-json-logger = "^2.0.7"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

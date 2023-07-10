@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "data-invest-sense"
+version = "0.1.0"
+description = ""
+authors = [ "FabioCaffarello <fabio.caffarello@gmail.com>" ]
+readme = "README.md"
+
+  [tool.poetry.dependencies]
+  python = "3.9.16"
+
+    [tool.poetry.dependencies.file_downloader]
+    path = "apps/ingestors/file-downloader"
+    develop = true
+
+    [tool.poetry.dependencies.pyrepository]
+    path = "libs/python/pyrepository"
+    develop = true
+
+    [tool.poetry.dependencies.pylog]
+    path = "libs/python/pylog"
+    develop = true
+
+    [tool.poetry.dependencies.pydotenv]
+    path = "libs/python/pydotenv"
+    develop = true
+
+    [tool.poetry.dependencies.core]
+    path = "libs/python/core"
+    develop = true
+
+    [tool.poetry.dependencies.pyrabbitmq]
+    path = "libs/python/pyrabbitmq"
+    develop = true
+
+    [tool.poetry.dependencies.pysd]
+    path = "libs/python/pysd"
+    develop = true
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "6.0.0"
+autopep8 = "2.0.2"
+pytest = "7.3.1"
+pytest-sugar = "0.9.7"
+pytest-cov = "4.1.0"
+pytest-html = "3.2.0"
+
+[build-system]
+requires = [ "poetry-core" ]
+build-backend = "poetry.core.masonry.api"

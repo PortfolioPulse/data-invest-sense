@@ -1,0 +1,7 @@
+{
+  "id": "job_id",
+  "name": "job",
+  "jobType": "batch",
+  "context": "br",
+  "outputType": "spark-treatment"
+}

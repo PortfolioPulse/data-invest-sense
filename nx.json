@@ -1,5 +1,13 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    ".eslintrc.json": "*"
+  },
+  "plugins": ["@nxlv/python"],
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",

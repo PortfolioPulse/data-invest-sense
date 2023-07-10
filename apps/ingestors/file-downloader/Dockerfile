@@ -1,0 +1,18 @@
+FROM python:3.9-slim-buster
+
+ARG GATEWAY_ENVIRONMENT
+ARG RABBITMQ_PORT_6572_TCP
+ARG RABBITMQ_GATEWAY_HOST
+ENV GATEWAY_ENVIRONMENT=$GATEWAY_ENVIRONMENT
+ENV RABBITMQ_PORT_6572_TCP=$RABBITMQ_PORT_6572_TCP
+ENV RABBITMQ_GATEWAY_HOST=$RABBITMQ_GATEWAY_HOST
+
+WORKDIR /app
+
+COPY dist/*.tar.gz .
+RUN pip install *.tar.gz
+RUN rm -rf *.tar.gz
+
+COPY file_downloader/ file_downloader/
+
+ENTRYPOINT ["python", "file_downloader/main.py"]

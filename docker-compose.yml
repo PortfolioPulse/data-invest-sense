@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+    networks:
+      - data-hub-network
+
+  # minio:
+  #   image: bitnami/minio
+  #   container_name: minio
+  #   ports:
+  #     - 9000:9000
+  #     - 9001:9001
+  #   environment:
+  #     MINIO_ACCESS_KEY: minio-access-key
+  #     MINIO_SECRET_KEY: minio-secret-key
+  #     MINIO_ROOT_USER: new-minio-root-user
+  #     MINIO_ROOT_PASSWORD: new-minio-root-password
+  #   volumes:
+  #     - minio_data:/data
+  #   networks:
+  #     - data-hub-network
+
+  ingestors-file-downloader:
+    image: ingestors-file-downloader:latest
+    container_name: ingestors-file-downloader
+    env_file:
+      - .env
+    # depends_on:
+    #   - rabbitmq
+    networks:
+      - data-hub-network
+
+networks:
+  data-hub-network:
+    name: data-hub-network
+    driver: bridge
+
+# volumes:
+#   minio_data:

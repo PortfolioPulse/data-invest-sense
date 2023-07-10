@@ -1,0 +1,85 @@
+{
+  "name": "ingestors-file-downloader",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/ingestors/file-downloader/file_downloader",
+  "targets": {
+    "lock": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry lock --no-update",
+        "cwd": "apps/ingestors/file-downloader"
+      }
+    },
+    "add": {
+      "executor": "@nxlv/python:add",
+      "options": {}
+    },
+    "update": {
+      "executor": "@nxlv/python:update",
+      "options": {}
+    },
+    "remove": {
+      "executor": "@nxlv/python:remove",
+      "options": {}
+    },
+    "build": {
+      "executor": "@nxlv/python:build",
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "options": {
+        "outputPath": "apps/ingestors/file-downloader/dist",
+        "publish": false,
+        "lockedVersions": true,
+        "bundleLocalDependencies": true
+      }
+    },
+    "install": {
+      "executor": "@nxlv/python:install",
+      "options": {
+        "silent": false,
+        "args": "",
+        "cacheDir": ".cache/pypoetry",
+        "verbose": false,
+        "debug": false
+      }
+    },
+    "lint": {
+      "executor": "@nxlv/python:flake8",
+      "outputs": [
+        "{workspaceRoot}/reports/apps/ingestors/file-downloader/pylint.txt"
+      ],
+      "options": {
+        "outputFile": "reports/apps/ingestors/file-downloader/pylint.txt"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/reports/apps/ingestors/file-downloader/unittests",
+        "{workspaceRoot}/coverage/apps/ingestors/file-downloader"
+      ],
+      "options": {
+        "command": "poetry run pytest tests/",
+        "cwd": "apps/ingestors/file-downloader"
+      }
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry run python file_downloader/main.py",
+        "cwd": "apps/ingestors/file-downloader"
+      }
+    },
+    "image": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "docker build -t ingestors-file-downloader:latest --build-arg GATEWAY_ENVIRONMENT=true --build-arg RABBITMQ_GATEWAY_HOST=rabbitmq --build-arg RABBITMQ_PORT_6572_TCP=tcp://guest:guest@gateway_host:5672/ -f ./Dockerfile .",
+        "cwd": "apps/ingestors/file-downloader"
+      }
+    }
+  },
+  "tags": []
+}
