@@ -1,4 +1,5 @@
 """Base RabbitMQ Module."""
+import asyncio
 import aio_pika
 import urllib.parse
 from pylog.log import setup_logging
@@ -12,7 +13,7 @@ class BaseRabbitMQ:
         self.connection = None
         self.channel = None
 
-    async def connect(self):
+    async def _connect(self):
         parsed_url = urllib.parse.urlparse(self.url)
         self.connection = await aio_pika.connect_robust(
             host=parsed_url.hostname,
@@ -21,6 +22,16 @@ class BaseRabbitMQ:
             password=parsed_url.password,
         )
         self.channel = await self.connection.channel()
+
+
+    async def connect(self):
+        while True:
+            try:
+                await self._connect()
+                break
+            except Exception as err:
+                logger.error('[CONNECTION] - Could not connect to RabbitMQ, retrying in 2 seconds...')
+                await asyncio.sleep(2)
 
     def on_connection_error(self, unused_connection, error):
         logger.error(f"Connection error: {error}")

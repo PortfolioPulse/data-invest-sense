@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass
 from typing import Dict, Any
 import json
@@ -63,5 +64,9 @@ class MessageProcessor:
         logger.info("Message parameters validated successfully")
 
 
-async def process_message(job_config, message_body: str):
-    await MessageProcessor.process_message(job_config, message_body)
+async def process_input(job_config: Config, message_body: str):
+    if job_config.jobType == 'event':
+        await MessageProcessor.process_message(job_config, message_body)
+    elif job_config.jobType == 'scheduler':
+        logger.info("Start Proccessing Scheduler Input...")
+        await asyncio.sleep(5)

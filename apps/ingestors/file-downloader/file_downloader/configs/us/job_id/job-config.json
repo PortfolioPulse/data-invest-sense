@@ -1,7 +1,9 @@
 {
   "id": "job_id",
   "name": "job",
-  "jobType": "batch",
+  "active": true,
+  "shouldRun": true,
+  "jobType": "event",
   "context": "us",
   "outputType": "spark-treatment"
 }

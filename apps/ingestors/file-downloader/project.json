@@ -67,6 +67,7 @@
     },
     "run": {
       "executor": "nx:run-commands",
+      "dependsOn": ["image"],
       "options": {
         "command": "poetry run python file_downloader/main.py",
         "cwd": "apps/ingestors/file-downloader"

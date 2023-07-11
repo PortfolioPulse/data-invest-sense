@@ -5,7 +5,9 @@ from dataclasses import dataclass
 class Config:
     id: str
     name: str
+    active: bool
     jobType: str
+    shouldRun: bool
     context: str
     outputType: str
 
