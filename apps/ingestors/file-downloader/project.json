@@ -80,6 +80,13 @@
         "command": "docker build -t ingestors-file-downloader:latest --build-arg GATEWAY_ENVIRONMENT=true --build-arg RABBITMQ_GATEWAY_HOST=rabbitmq --build-arg RABBITMQ_PORT_6572_TCP=tcp://guest:guest@gateway_host:5672/ -f ./Dockerfile .",
         "cwd": "apps/ingestors/file-downloader"
       }
+    },
+    "run-temp": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry run python file_downloader/main.py",
+        "cwd": "apps/ingestors/file-downloader"
+      }
     }
   },
   "tags": []

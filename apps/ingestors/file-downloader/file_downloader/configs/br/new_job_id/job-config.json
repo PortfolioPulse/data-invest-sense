@@ -1,6 +1,6 @@
 {
-  "id": "job_id",
-  "name": "job",
+  "id": "new_job_id",
+  "name": "new-job",
   "active": true,
   "shouldRun": true,
   "jobType": "event",

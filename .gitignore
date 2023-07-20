@@ -3,7 +3,7 @@
 
 .history
 temp
-notes
+notes/
 reports
 .env
 .vscode
