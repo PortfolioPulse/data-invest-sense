@@ -20,8 +20,8 @@ class Event:
         async with rabbitmq_service.connection:
             channel = await rabbitmq_service.connection.channel()
             await channel.set_qos(prefetch_count=1)
-            queue = await channel.declare_queue(queue_name)
+            queue = await channel.declare_queue(queue_name, durable=True)
             await queue.consume(callback)
-
             while True:
                 await asyncio.sleep(0.1)
+

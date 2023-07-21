@@ -11,6 +11,14 @@ aiormq = ">=6.7.5,<6.8.0"
 yarl = "*"
 
 [[package]]
+name = "aiofiles"
+version = "23.1.0"
+description = "File support for asyncio."
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[[package]]
 name = "aiormq"
 version = "6.7.6"
 description = "Pure python AMQP asynchronous client library"
@@ -21,6 +29,14 @@ python-versions = ">=3.7,<4.0"
 [package.dependencies]
 pamqp = "3.2.1"
 yarl = "*"
+
+[[package]]
+name = "async-generator"
+version = "1.10"
+description = "Async generators and context managers for Python 3.5+"
+category = "main"
+optional = false
+python-versions = ">=3.5"
 
 [[package]]
 name = "attrs"
@@ -119,13 +135,13 @@ optional = false
 develop = true
 
 [package.dependencies]
+aiofiles = "^23.1.0"
 core = {path = "../../../libs/python/core", develop = true}
 pydotenv = {path = "../../../libs/python/pydotenv", develop = true}
 pylog = {path = "../../../libs/python/pylog", develop = true}
 pyrabbitmq = {path = "../../../libs/python/pyrabbitmq", develop = true}
 pyrepository = {path = "../../../libs/python/pyrepository", develop = true}
 pysd = {path = "../../../libs/python/pysd", develop = true}
-trio = "^0.22.2"
 
 [package.source]
 type = "directory"
@@ -294,7 +310,10 @@ develop = true
 
 [package.dependencies]
 aio-pika = "^9.1.4"
+async_generator = "^1.10"
 pylog = {path = "../pylog", develop = true}
+trio = "^0.22.2"
+trio_amqp = "^0.2.13"
 
 [package.source]
 type = "directory"
@@ -475,6 +494,17 @@ sniffio = "*"
 sortedcontainers = "*"
 
 [[package]]
+name = "trio-amqp"
+version = "0.2.13"
+description = "AMQP implementation using trio"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+trio = ">=0.6"
+
+[[package]]
 name = "yarl"
 version = "1.9.2"
 description = "Yet another URL library"
@@ -496,9 +526,17 @@ aio-pika = [
     {file = "aio_pika-9.1.4-py3-none-any.whl", hash = "sha256:d51738779c8a16f9f64801b71115c7270f761b7869cc19a429165ad715db9e33"},
     {file = "aio_pika-9.1.4.tar.gz", hash = "sha256:fdfd966217e191a601c78b0869dd2d646ef64c11f7a16c88494a17c8b22b001a"},
 ]
+aiofiles = [
+    {file = "aiofiles-23.1.0-py3-none-any.whl", hash = "sha256:9312414ae06472eb6f1d163f555e466a23aed1c8f60c30cccf7121dba2e53eb2"},
+    {file = "aiofiles-23.1.0.tar.gz", hash = "sha256:edd247df9a19e0db16534d4baaf536d6609a43e1de5401d7a4c1c148753a1635"},
+]
 aiormq = [
     {file = "aiormq-6.7.6-py3-none-any.whl", hash = "sha256:da53ec26aeecdccda8dab7947f391c9b53943f7dd45c0fc4b515971e7fc320cf"},
     {file = "aiormq-6.7.6.tar.gz", hash = "sha256:ccf495e3da2849be37ba802389839ac7a6f18cf58f2b7d5f2cc4eb21e2dbc564"},
+]
+async-generator = [
+    {file = "async_generator-1.10-py3-none-any.whl", hash = "sha256:01c7bf666359b4967d2cda0000cc2e4af16a0ae098cbffcb8472fb9e8ad6585b"},
+    {file = "async_generator-1.10.tar.gz", hash = "sha256:6ebb3d106c12920aaae42ccb6f787ef5eefdcdd166ea3d628fa8476abe712144"},
 ]
 attrs = [
     {file = "attrs-23.1.0-py3-none-any.whl", hash = "sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04"},
@@ -822,6 +860,9 @@ tomli = [
 trio = [
     {file = "trio-0.22.2-py3-none-any.whl", hash = "sha256:f43da357620e5872b3d940a2e3589aa251fd3f881b65a608d742e00809b1ec38"},
     {file = "trio-0.22.2.tar.gz", hash = "sha256:3887cf18c8bcc894433420305468388dac76932e9668afa1c49aa3806b6accb3"},
+]
+trio-amqp = [
+    {file = "trio_amqp-0.2.13.tar.gz", hash = "sha256:41901aa1482ed20d8e45ea39f91836ed1f0efb337ae8f60d2b1c4b9a0df0375f"},
 ]
 yarl = [
     {file = "yarl-1.9.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8c2ad583743d16ddbdf6bb14b5cd76bf43b0d0006e918809d5d4ddf7bde8dd82"},

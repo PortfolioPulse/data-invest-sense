@@ -1,14 +1,15 @@
-from dataclasses import dataclass, field
-import os
 import json
+import os
+from dataclasses import dataclass, field
+from pydotenv.dotenv import DotEnvLoader
 from pathlib import Path
-from pylog.log import setup_logging
-from typing import Dict, Type, TypeVar
+from typing import Dict, Any
+import asyncio
+import aiofiles
 
-import trio
+from pylog.log import setup_logging
 
 logger = setup_logging(__name__)
-
 
 @dataclass
 class JobMetadataParams:
@@ -17,34 +18,24 @@ class JobMetadataParams:
     context: str
     rootPath: Path
 
-
 @dataclass
 class JobParams:
     jobType: str
     active: bool
-
 
 @dataclass
 class Config:
     jobMetadataParams: JobMetadataParams
     jobParams: JobParams
 
-
 @dataclass
 class LoadConfig:
     path: Path
     configRaw: dict = field(init=False)
 
-    async def __aenter__(self):
-        self.file = await trio.open_file(self.path, 'r')
-        return self
-
-    async def __aexit__(self, exc_type, exc_value, traceback):
-        await self.file.aclose()
-
     async def _read_config(self):
-        async with self.file:
-            self.configRaw = json.loads(await self.file.read())
+        with open(self.path, 'r') as file:
+            self.configRaw = json.load(file)
 
     def _set_job_params(self):
         return JobParams(
@@ -68,16 +59,14 @@ class LoadConfig:
         )
 
 
-def find_config_files(config_type: str):
+def find_config_files(config_type: str, env: DotEnvLoader = DotEnvLoader()):
     job_config_files = list(
         Path(__file__).parent.joinpath(
-            os.getenv("CONTEXT_SERVICE", "")
+            env.get_variable('CONTEXT_SERVICE')
         ).rglob(config_type))
     return job_config_files
 
-
 mapping_config: Dict[str, Dict[str, Config]] = dict()
-
 
 def register_config(context: str, config_id: str, config: Config):
     if context not in mapping_config:
@@ -87,22 +76,20 @@ def register_config(context: str, config_id: str, config: Config):
         logger.info(f"Warning: Duplicate config ID '{config_id}' for context '{context}'. Overwriting existing config.")
     mapping_config[context][config_id] = config
 
-
 async def _load_config(config_path):
-    async with LoadConfig(config_path) as config_loader:
-        config = await config_loader.export_config()
-        if config.jobParams.active:
-            register_config(
-                config.jobMetadataParams.context,
-                config.jobMetadataParams._id,
-                config
-            )
-
+    config_loader = LoadConfig(config_path)
+    config = await config_loader.export_config()
+    if config.jobParams.active:
+        register_config(
+            config.jobMetadataParams.context,
+            config.jobMetadataParams._id,
+            config
+        )
 
 async def read_config_async():
-    async with trio.open_nursery() as nursery:
-        for _config_path in find_config_files('job-config.json'):
-            nursery.start_soon(_load_config, _config_path)
+    config_files = find_config_files('job-config.json')
+    await asyncio.gather(*[_load_config(config_path) for config_path in config_files])
     return mapping_config
 
-
+# If you need to run the `read_config_async` function, you can use the following:
+# mapping_config = asyncio.run(read_config_async())

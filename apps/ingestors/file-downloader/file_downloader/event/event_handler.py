@@ -3,7 +3,6 @@ import json
 from pyrepository.interfaces.ingestors.dtos import Config, MessageParameters
 from pylog.log import setup_logging
 from functools import wraps
-# from jobs.jobs import trigger_job
 
 logger = setup_logging(__name__)
 
@@ -18,8 +17,8 @@ def validate_event_data(func):
 
 
 class EventHandler:
-    def __init__(self, job_config: Config, message_body: str, queue: asyncio.Queue):
-        self.__input_queue = queue
+    def __init__(self, job_config: Config, message_body: str, aio_queue: asyncio.Queue):
+        self.__aio_queue = aio_queue
         self.__job_config = job_config
         self.__message_body = message_body
 
@@ -30,20 +29,8 @@ class EventHandler:
     async def _process_event(self, job_config: Config, message_body: str):
         logger.info(job_config)
         message_params = EventHandler.parse_message_body(message_body)
-        # module_name = f"event_stream.jobs.{job_config.jobType}.job_handler"
-        # logger.info(module_name)
-        # module_name = f"file_downloader.jobs.{job_config.jobType}.job_handler"
-        # logger.info(module_name)
-        # try:
-        #     job_module = importlib.import_module(module_name)
-        # except ModuleNotFoundError:
-        #     logger.error(f"Module '{module_name}' not found")
-        #     return
 
-        # Trigger the job
-        # trigger_job(message_params.input)
-
-        await self.__input_queue.put(message_params)
+        await self.__aio_queue.put(message_params)
 
     @staticmethod
     def parse_message_body(message_body: str) -> MessageParameters:

@@ -23,6 +23,9 @@ readme = "README.md"
   [tool.poetry.dependencies]
   python = ">=3.9,<3.11"
   aio-pika = "^9.1.4"
+  trio = "^0.22.2"
+  trio_amqp = "^0.2.13"
+  async_generator = "^1.10"
 
     [tool.poetry.dependencies.pylog]
     path = "../pylog"
