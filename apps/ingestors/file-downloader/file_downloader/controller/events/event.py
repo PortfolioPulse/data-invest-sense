@@ -1,15 +1,23 @@
 from collections import defaultdict
+import asyncio
+from configs.loader import Config
 
-subscribers = defaultdict(list)
+class EventObserver:
+    def __init__(self, config: Config):
+        self.config = config
+        self.subscribers = defaultdict(lambda: defaultdict(list))
+        self.results = dict()
 
-def subscribe(event_type: str, fn):
-    if event_type not in subscribers:
-        subscribers[event_type] = []
-    subscribers[event_type].append(fn)
+    def add_subscribe(self, event_type: str, fn):
+        if event_type not in self.subscribers:
+            self.subscribers[event_type] = []
+        self.subscribers[event_type].append(fn)
 
+    async def post_event(self, event_type: str, event_data):
+        if event_type not in self.subscribers:
+            return
 
-def post_event(event_type: str, event_data):
-    if not event_type in subscribers:
-        return
-    for fn in subscribers[event_type]:
-        yield fn(event_data)
+        tasks = [fn(event_data) for fn in self.subscribers[event_type]]
+        results = await asyncio.gather(*tasks)
+        for fn, result in zip(self.subscribers[event_type], results):
+            self.results[f"{fn.__self__.__class__.__name__}.{fn.__name__}"] = result

@@ -5,14 +5,12 @@ import json
 import importlib
 from pylog.log import setup_logging
 from pyrepository.interfaces.ingestors.dtos import Config, MessageParameters
-from controller.events.event import post_event
 from jobs.jobs import trigger_job
-from controller.events.listeners.mongo_listener import set_mongo_event_handlers
+from controller.events.listeners.mongo_listener import MongoDBEventListener
+from controller.events.listeners.kafka_listener import KafkaEventListener
+from controller.events.event import EventObserver
 
 logger = setup_logging(__name__)
-
-def set_event_handlers():
-    set_mongo_event_handlers()
 
 
 class Controller:
@@ -24,10 +22,14 @@ class Controller:
         while True:
             message = await self.__aio_queue.get()
             logger.info(f"Received message from queue '{self.__config.jobMetadataParams.context}.{self.__config.jobMetadataParams._id}': {message}")
-            set_event_handlers()
-            check_config = post_event("check_config", self.__config)
-            logger.info(f"check_config: {list(check_config)}")
+            observer = EventObserver(self.__config)
+            MongoDBEventListener(self.observer)
+            KafkaEventListener(self.observer)
+            await observer.post_event("check_config", self.__config)
+            for listener_handler, result in observer.results.items():
+                logger.info(f"listener_handler: {listener_handler}")
+                logger.info(f"result: {result}")
             trigger_job(message)
 
-# {"input": {"referencia": "2023-07-21"}, "metadata": {"processingId": "123"}}
-#
+
+

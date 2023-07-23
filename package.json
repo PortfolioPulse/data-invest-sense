@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "devDependencies": {
+    "@nx-go/nx-go": "^2.7.0",
     "@nx/workspace": "16.4.0",
     "@nxlv/python": "^16.0.0",
     "nx": "16.4.0"
