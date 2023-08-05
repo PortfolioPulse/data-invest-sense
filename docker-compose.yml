@@ -3,6 +3,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    restart: always
     ports:
       - 5672:5672
       - 15672:15672
@@ -11,7 +12,7 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
       RABBITMQ_DEFAULT_VHOST: /
     networks:
-      - data-hub-network
+      - invest-sense-network
 
   # minio:
   #   image: bitnami/minio
@@ -27,21 +28,30 @@ services:
   #   volumes:
   #     - minio_data:/data
   #   networks:
-  #     - data-hub-network
+  #     - invest-sense
 
-  ingestors-file-downloader:
-    image: ingestors-file-downloader:latest
-    container_name: ingestors-file-downloader
-    env_file:
-      - .env
-    # depends_on:
-    #   - rabbitmq
+  # ingestors-file-downloader:
+  #   image: ingestors-file-downloader:latest
+  #   container_name: ingestors-file-downloader
+  #   env_file:
+  #     - .env
+  #   # depends_on:
+  #   #   - rabbitmq
+  #   networks:
+  #     - invest-sense
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
     networks:
-      - data-hub-network
+      - invest-sense-network
 
 networks:
-  data-hub-network:
-    name: data-hub-network
+  invest-sense-network:
+    name: invest-sense-network
     driver: bridge
 
 # volumes:

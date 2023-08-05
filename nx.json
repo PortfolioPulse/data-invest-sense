@@ -1,5 +1,4 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "implicitDependencies": {
     "package.json": {
       "dependencies": "*",
@@ -7,19 +6,19 @@
     },
     ".eslintrc.json": "*"
   },
-  "plugins": ["@nxlv/python"],
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ]
-      }
-    }
+  "plugins": [
+    "@nxlv/python",
+    "@nx-go/nx-go"
+  ],
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "production": [
+      "default"
+    ],
+    "sharedGlobals": []
   },
   "targetDefaults": {
     "build": {
@@ -32,14 +31,17 @@
       ]
     }
   },
-  "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
-    "production": [
-      "default"
-    ],
-    "sharedGlobals": []
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ]
+      }
+    }
   }
 }

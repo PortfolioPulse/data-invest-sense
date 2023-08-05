@@ -1,9 +1,8 @@
 import asyncio
-from pathlib import Path
 from pylog.log import setup_logging
 from pyrabbit.consumer import RabbitMQConsumer
 from pysd.service_discovery import new_from_env
-from event.event import Event
+from consumer.event import Event
 from controller.controller import Controller
 from configs.loader import read_config_async
 

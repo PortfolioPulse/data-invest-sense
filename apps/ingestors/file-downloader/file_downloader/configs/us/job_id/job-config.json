@@ -3,7 +3,10 @@
   "name": "job",
   "active": true,
   "shouldRun": true,
-  "jobType": "event",
+  "jobHandler": "dummy",
   "context": "us",
-  "outputType": "spark-treatment"
+  "outputType": "spark-treatment",
+  "jobParams": {
+    "url": "http://www.google.com"
+  }
 }

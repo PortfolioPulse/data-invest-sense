@@ -1,0 +1,71 @@
+{
+  "name": "apis-lake-manager",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/apis/lake-manager",
+  "targets": {
+    "build": {
+      "executor": "@nx-go/nx-go:build",
+      "options": {
+        "outputPath": "dist/apps/apis/lake-manager",
+        "main": "apps/apis/lake-manager/cmd/server/main.go"
+      }
+    },
+    "serve": {
+      "executor": "@nx-go/nx-go:serve",
+      "options": {
+        "main": "apps/apis/lake-manager/cmd/server/main.go"
+      }
+    },
+    "test": {
+      "executor": "@nx-go/nx-go:test"
+    },
+    "lint": {
+      "executor": "@nx-go/nx-go:lint"
+    },
+    "go-tidy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go mod tidy",
+        "cwd": "apps/apis/lake-manager"
+      }
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run cmd/server/main.go",
+        "cwd": "apps/apis/lake-manager"
+      }
+    },
+    "doc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "swag init -g cmd/server/main.go",
+        "cwd": "apps/apis/lake-manager"
+      }
+    },
+    "image": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build -t fabiocaffarello/apis-lake-manager:latest -f ./Dockerfile .",
+        "cwd": "apps/apis/lake-manager"
+      }
+    },
+    "run-compose": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["image"],
+      "options": {
+        "command": "docker-compose up -d",
+        "cwd": "apps/apis/lake-manager"
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker push fabiocaffarello/apis-lake-manager:latest",
+        "cwd": "apps/apis/lake-manager"
+      }
+    }
+  },
+  "tags": []
+}

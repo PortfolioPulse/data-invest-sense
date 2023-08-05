@@ -1,0 +1,107 @@
+{
+  "name": "infra-k8s",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/infra/k8s",
+  "projectType": "application",
+  "targets": {
+    "create-cluster": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kind create cluster --name invest-sense --config=namespace/kind.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "delete-cluster": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kind delete clusters invest-sense",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "set-kubectl": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl cluster-info --context kind-invest-sense",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "get-metrics-server": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wget https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml",
+        "cwd": "apps/infra/k8s/config"
+      }
+    },
+    "get-base64": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"{args.text}\" | base64",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-deployment": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/services/lake-manager/deployment.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-service": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/services/lake-manager/service.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-security": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/security.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-configmap": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/services/lake-manager/configmap-env.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-hpa": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/services/lake-manager/hpa.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/secrets/lake-manager/secrets.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-metrics": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/metrics-server.yaml",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "apply-with-watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl apply -f namespace/services/lake-manager/deployment.yaml && watch -n1 kubectl get pods",
+        "cwd": "apps/infra/k8s"
+      }
+    },
+    "stress-test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "kubectl run -it fortio --rm --image=fortio/fortio -- load -qps 800 -t 120s -c 70 \"http://lake-manager:8000/healthz\"",
+        "cwd": "apps/infra/k8s"
+      }
+    }
+  },
+  "tags": []
+}

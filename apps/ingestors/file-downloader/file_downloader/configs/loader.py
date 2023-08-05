@@ -1,12 +1,9 @@
 import json
-import os
 from dataclasses import dataclass, field
 from pydotenv.dotenv import DotEnvLoader
 from pathlib import Path
 from typing import Dict, Any
 import asyncio
-import aiofiles
-
 from pylog.log import setup_logging
 
 logger = setup_logging(__name__)
@@ -20,8 +17,9 @@ class JobMetadataParams:
 
 @dataclass
 class JobParams:
-    jobType: str
+    jobHandler: str
     active: bool
+    url: str
 
 @dataclass
 class Config:
@@ -39,8 +37,9 @@ class LoadConfig:
 
     def _set_job_params(self):
         return JobParams(
-            jobType=self.configRaw["jobType"],
+            jobHandler=self.configRaw["jobHandler"],
             active=self.configRaw["active"],
+            url=self.configRaw["jobParams"]["url"],
         )
 
     def _set_job_metadata_params(self):
@@ -90,6 +89,3 @@ async def read_config_async():
     config_files = find_config_files('job-config.json')
     await asyncio.gather(*[_load_config(config_path) for config_path in config_files])
     return mapping_config
-
-# If you need to run the `read_config_async` function, you can use the following:
-# mapping_config = asyncio.run(read_config_async())

@@ -14,6 +14,5 @@ class Config:
 
 @dataclass
 class MessageParameters:
-    input: dict
+    data: dict
     metadata: dict
-    

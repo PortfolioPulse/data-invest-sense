@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  lake-manager-api:
+    image: fabiocaffarello/apis-lake-manager:latest
+    container_name: lake-manager-api
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"

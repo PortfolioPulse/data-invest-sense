@@ -3,7 +3,10 @@
   "name": "job",
   "active": true,
   "shouldRun": true,
-  "jobType": "event",
+  "jobHandler": "dummy",
   "context": "br",
-  "outputType": "spark-treatment"
+  "outputType": "spark-treatment",
+  "jobParams": {
+    "url": "https://portaldatransparencia.gov.br/download-de-dados/cnep/{}"
+  }
 }
