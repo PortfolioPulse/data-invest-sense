@@ -1,0 +1,28 @@
+scalar JSON
+
+type Metadata {
+  processingId: String!
+  processingTimestamp: String!
+  source: String!
+  service: String!
+}
+
+type Status {
+  code: Int!
+  detail: String!
+}
+
+type Input {
+  id: String!
+  data: JSON!
+  metadata: Metadata!
+  status: Status!
+}
+
+input InputInput {
+  data: JSON!
+}
+
+type Mutation {
+  createInput(input: InputInput!, source: String!, service: String!): Input!
+}

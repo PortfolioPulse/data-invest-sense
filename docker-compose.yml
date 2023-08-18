@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -11,6 +11,24 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
       RABBITMQ_DEFAULT_VHOST: /
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 4
+    networks:
+      - invest-sense-network
+
+  lake-gateway:
+    image: fabiocaffarello/lake-gateway:latest
+    container_name: lake-gateway
+    ports:
+      - 8000:8000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      # mongodb:
+      #   condition: service_healthy
     networks:
       - invest-sense-network
 
@@ -42,6 +60,7 @@ services:
 
   mongodb:
     image: mongo
+    container_name: mongodb
     ports:
       - 27017:27017
     volumes:

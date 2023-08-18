@@ -17,14 +17,28 @@ type SchemaInputRepository struct {
 
 func NewSchemaInputRepository(client *mongo.Client) *SchemaInputRepository {
 	return &SchemaInputRepository{
-		client:   client,
-		database: "schemas",
-          collectionName: "input",
+		client:         client,
+		database:       "schemas",
+		collectionName: "input",
 	}
 }
 
 func (si *SchemaInputRepository) Save(input *schemas.SchemaInput) error {
 	collection := si.client.Database(si.database).Collection(si.collectionName)
+	// Check if the document already exists based on the ID
+	filter := bson.M{"id": input.ID}
+	existingDoc := collection.FindOne(context.Background(), filter)
+
+	if existingDoc.Err() == nil {
+		// Document already exists, you can update it here if needed
+		fmt.Println("Document already exists:", existingDoc)
+		return nil
+	} else if existingDoc.Err() != mongo.ErrNoDocuments {
+		// Some error occurred while querying
+		return existingDoc.Err()
+	}
+
+	fmt.Println("Input Document: ", input)
 
 	res, err := collection.InsertOne(context.Background(), bson.M{
 		"id":         input.ID,
@@ -37,7 +51,6 @@ func (si *SchemaInputRepository) Save(input *schemas.SchemaInput) error {
 		return err
 	}
 	fmt.Println("Result: ", res)
-	// defer collection.Drop(ctx)
 
 	return nil
 }

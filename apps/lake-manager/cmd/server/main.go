@@ -21,6 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+     "libs/golang/go-rabbitmq/queue"
 )
 
 func main() {
@@ -85,4 +86,9 @@ func getRabbitMQChannel() *amqp.Channel {
 		panic(err)
 	}
 	return ch
+}
+
+func getRabbitMQChannelNew(config *configs.Conf) *amqp.Channel {
+     rabbitMQ := queue.NewRabbitMQ(config.RabbitMQProtocol, config.RabbitMQHost, config.RabbitMQPort, config.RabbitMQUser, config.RabbitMQPassword, config.RabbitMQVhost, config.RabbitMQConsumerQueueName, config.RabbitMQConsumerName, config.RabbitMQExchange, config.RabbitMQDlxName, false, nil)
+     return rabbitMQ.Connect()
 }

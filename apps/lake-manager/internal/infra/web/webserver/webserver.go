@@ -36,3 +36,10 @@ func (s *WebServer) Start() {
 	}
 	http.ListenAndServe(s.WebServerPort, s.Router)
 }
+
+
+
+webServer.Route("/inputs", func(r chi.Router) {
+	r.Post("/service/{service}/source/{source}", webInputHandler.Create)
+	r.Get("/service/{service}/source/{source}/{id}", webInputHandler.FindByID)
+})

@@ -1,18 +1,18 @@
 [[package]]
 name = "aio-pika"
-version = "9.1.4"
+version = "9.2.1"
 description = "Wrapper around the aiormq for asyncio and humans"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 
 [package.dependencies]
-aiormq = ">=6.7.5,<6.8.0"
+aiormq = ">=6.7.7,<6.8.0"
 yarl = "*"
 
 [[package]]
 name = "aiormq"
-version = "6.7.6"
+version = "6.7.7"
 description = "Pure python AMQP asynchronous client library"
 category = "main"
 optional = false
@@ -458,17 +458,17 @@ multidict = ">=4.0"
 
 [metadata]
 lock-version = "1.1"
-  python-versions = "3.9.16"
-content-hash = "18fc6260aa7dc6b3e551c52252b0ab3e9c1381d6572fe54315b58696747bf145"
+  python-versions = "3.10.11"
+content-hash = "60c44c4134c7d0e6bf054066fc97fd60d8b9cd244c73c6d5dfb4cb1c9347ff2c"
 
 [metadata.files]
 aio-pika = [
-    {file = "aio_pika-9.1.4-py3-none-any.whl", hash = "sha256:d51738779c8a16f9f64801b71115c7270f761b7869cc19a429165ad715db9e33"},
-    {file = "aio_pika-9.1.4.tar.gz", hash = "sha256:fdfd966217e191a601c78b0869dd2d646ef64c11f7a16c88494a17c8b22b001a"},
+    {file = "aio_pika-9.2.1-py3-none-any.whl", hash = "sha256:56211eba105c4c8802e5b3fd7ffe8bff58f04a1d86672ea7bc61719d438a0baf"},
+    {file = "aio_pika-9.2.1.tar.gz", hash = "sha256:a1dfdbd33e1503d891f9480ca93cd56a532910c4f5d48e5f830edf91d05834e5"},
 ]
 aiormq = [
-    {file = "aiormq-6.7.6-py3-none-any.whl", hash = "sha256:da53ec26aeecdccda8dab7947f391c9b53943f7dd45c0fc4b515971e7fc320cf"},
-    {file = "aiormq-6.7.6.tar.gz", hash = "sha256:ccf495e3da2849be37ba802389839ac7a6f18cf58f2b7d5f2cc4eb21e2dbc564"},
+    {file = "aiormq-6.7.7-py3-none-any.whl", hash = "sha256:f5efbfcd7d703f3c05c08d4e74cfaa66ca7199840e2969d75ad41b0810026b0a"},
+    {file = "aiormq-6.7.7.tar.gz", hash = "sha256:3b93f612f56989b2757a9a7b299dd94dd3227ce28ba43e81d5fbcded6341dfab"},
 ]
 autopep8 = [
     {file = "autopep8-2.0.2-py2.py3-none-any.whl", hash = "sha256:86e9303b5e5c8160872b2f5ef611161b2893e9bfe8ccc7e2f76385947d57a2f1"},

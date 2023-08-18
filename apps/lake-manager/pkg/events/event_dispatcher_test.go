@@ -172,6 +172,6 @@ func (suite *EventDispatcherTestSuite) TestEventDispatch_Dispatch() {
 	eh2.AssertNumberOfCalls(suite.T(), "Handle", 1)
 }
 
-func TestSuite(t *testing.T) {
+func TestEventDispatcherSuite(t *testing.T) {
 	suite.Run(t, new(EventDispatcherTestSuite))
 }
