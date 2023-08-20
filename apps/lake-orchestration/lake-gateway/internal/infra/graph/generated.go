@@ -3,7 +3,7 @@
 package graph
 
 import (
-	"apps/lake-orchestation/lake-gateway/internal/infra/graph/model"
+	"apps/lake-orchestration/lake-gateway/internal/infra/graph/model"
 	"bytes"
 	"context"
 	"embed"
@@ -303,7 +303,7 @@ func (ec *executionContext) field_Mutation_createInput_args(ctx context.Context,
 	var arg0 model.InputInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNInputInput2appsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInputInput(ctx, tmp)
+		arg0, err = ec.unmarshalNInputInput2appsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInputInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -499,7 +499,7 @@ func (ec *executionContext) _Input_metadata(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Metadata)
 	fc.Result = res
-	return ec.marshalNMetadata2ᚖappsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐMetadata(ctx, field.Selections, res)
+	return ec.marshalNMetadata2ᚖappsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐMetadata(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Input_metadata(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -553,7 +553,7 @@ func (ec *executionContext) _Input_status(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Status)
 	fc.Result = res
-	return ec.marshalNStatus2ᚖappsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐStatus(ctx, field.Selections, res)
+	return ec.marshalNStatus2ᚖappsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Input_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -779,7 +779,7 @@ func (ec *executionContext) _Mutation_createInput(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.Input)
 	fc.Result = res
-	return ec.marshalNInput2ᚖappsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInput(ctx, field.Selections, res)
+	return ec.marshalNInput2ᚖappsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInput(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createInput(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3435,11 +3435,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNInput2appsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInput(ctx context.Context, sel ast.SelectionSet, v model.Input) graphql.Marshaler {
+func (ec *executionContext) marshalNInput2appsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInput(ctx context.Context, sel ast.SelectionSet, v model.Input) graphql.Marshaler {
 	return ec._Input(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNInput2ᚖappsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInput(ctx context.Context, sel ast.SelectionSet, v *model.Input) graphql.Marshaler {
+func (ec *executionContext) marshalNInput2ᚖappsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInput(ctx context.Context, sel ast.SelectionSet, v *model.Input) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3449,7 +3449,7 @@ func (ec *executionContext) marshalNInput2ᚖappsᚋlakeᚑorchestationᚋlake�
 	return ec._Input(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNInputInput2appsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInputInput(ctx context.Context, v interface{}) (model.InputInput, error) {
+func (ec *executionContext) unmarshalNInputInput2appsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐInputInput(ctx context.Context, v interface{}) (model.InputInput, error) {
 	res, err := ec.unmarshalInputInputInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3484,7 +3484,7 @@ func (ec *executionContext) marshalNJSON2string(ctx context.Context, sel ast.Sel
 	return res
 }
 
-func (ec *executionContext) marshalNMetadata2ᚖappsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐMetadata(ctx context.Context, sel ast.SelectionSet, v *model.Metadata) graphql.Marshaler {
+func (ec *executionContext) marshalNMetadata2ᚖappsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐMetadata(ctx context.Context, sel ast.SelectionSet, v *model.Metadata) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3494,7 +3494,7 @@ func (ec *executionContext) marshalNMetadata2ᚖappsᚋlakeᚑorchestationᚋlak
 	return ec._Metadata(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNStatus2ᚖappsᚋlakeᚑorchestationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐStatus(ctx context.Context, sel ast.SelectionSet, v *model.Status) graphql.Marshaler {
+func (ec *executionContext) marshalNStatus2ᚖappsᚋlakeᚑorchestrationᚋlakeᚑgatewayᚋinternalᚋinfraᚋgraphᚋmodelᚐStatus(ctx context.Context, sel ast.SelectionSet, v *model.Status) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

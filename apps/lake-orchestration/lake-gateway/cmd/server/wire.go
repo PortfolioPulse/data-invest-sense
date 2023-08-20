@@ -4,14 +4,15 @@
 package main
 
 import (
-	"apps/lake-orchestation/lake-gateway/internal/entity"
-	"apps/lake-orchestation/lake-gateway/internal/event"
-	"apps/lake-orchestation/lake-gateway/internal/infra/database"
-	webHandler "apps/lake-orchestation/lake-gateway/internal/infra/web/handlers"
-	"apps/lake-orchestation/lake-gateway/internal/usecase"
+	"apps/lake-orchestration/lake-gateway/internal/entity"
+	"apps/lake-orchestration/lake-gateway/internal/event"
+	"apps/lake-orchestration/lake-gateway/internal/infra/database"
+	webHandler "apps/lake-orchestration/lake-gateway/internal/infra/web/handlers"
+	"apps/lake-orchestration/lake-gateway/internal/usecase"
+	"libs/golang/events"
+
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
-	"libs/golang/events"
 )
 
 var setInputRepositoryDependency = wire.NewSet(

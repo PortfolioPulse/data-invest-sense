@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"apps/lake-orchestation/lake-gateway/internal/entity"
+	"apps/lake-orchestration/lake-gateway/internal/entity"
 
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"

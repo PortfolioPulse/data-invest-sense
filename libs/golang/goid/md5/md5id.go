@@ -54,3 +54,10 @@ func NewWithSourceID(data map[string]interface{}, source string) ID {
      // Convert the hash to a hexadecimal string and return it as an ID
      return ID(hex.EncodeToString(hash))
 }
+
+func NewMd5Hash(data string) ID {
+     hasher := md5.New()
+     hasher.Write([]byte(data))
+     hash := hasher.Sum(nil)
+     return ID(hex.EncodeToString(hash))
+}

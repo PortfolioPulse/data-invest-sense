@@ -1,7 +1,7 @@
 package database
 
 import (
-	"apps/lake-orchestation/lake-gateway/internal/entity"
+	"apps/lake-orchestration/lake-gateway/internal/entity"
 	"context"
 	"log"
 	"os"

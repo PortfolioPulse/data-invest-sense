@@ -22,6 +22,58 @@
     },
     "lint": {
       "executor": "@nx-go/nx-go:lint"
+    },
+    "go-tidy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go mod tidy",
+        "cwd": "apps/lake-orchestration/lake-repository"
+      }
+    },
+    "wire": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wire",
+        "cwd": "apps/lake-orchestration/lake-repository/cmd/server"
+      }
+    },
+    "protoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "protoc --go_out=. --go-grpc_out=. internal/infra/grpc/protofiles/schema.proto",
+        "cwd": "apps/lake-orchestration/lake-repository"
+      }
+    },
+    "graphql-init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run github.com/99designs/gqlgen init",
+        "cwd": "apps/lake-orchestration/lake-repository"
+      }
+    },
+    "graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run github.com/99designs/gqlgen generate",
+        "cwd": "apps/lake-orchestration/lake-repository"
+      }
+    },
+    "build-go": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags=\"-w -s\" -o dist/server ./cmd/server/main.go ./cmd/server/wire_gen.go",
+        "cwd": "apps/lake-orchestration/lake-repository"
+      }
+    },
+    "build-docker": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "build-go"
+      ],
+      "options": {
+        "command": "docker build -t fabiocaffarello/lake-repository:latest -f ./Dockerfile.prod .",
+        "cwd": "apps/lake-orchestration/lake-repository"
+      }
     }
   },
   "tags": []

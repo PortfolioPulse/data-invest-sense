@@ -1,7 +1,7 @@
 package graph
 
 import (
-     "apps/lake-orchestation/lake-gateway/internal/usecase"
+     "apps/lake-orchestration/lake-gateway/internal/usecase"
 )
 
 // This file will not be regenerated automatically.

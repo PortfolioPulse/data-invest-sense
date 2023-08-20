@@ -1,8 +1,8 @@
 package service
 
 import (
-	"apps/lake-orchestation/lake-gateway/internal/infra/grpc/pb"
-	"apps/lake-orchestation/lake-gateway/internal/usecase"
+	"apps/lake-orchestration/lake-gateway/internal/infra/grpc/pb"
+	"apps/lake-orchestration/lake-gateway/internal/usecase"
 	"context"
 
 	"google.golang.org/grpc/metadata"

@@ -22,7 +22,7 @@ func NewConfigRepository(client *mongo.Client, database string) *ConfigRepositor
 		log:        log.New(os.Stdout, "[CONFIG-REPOSITORY] ", log.LstdFlags),
 		Client:     client,
 		Database:   database,
-		Collection: client.Database(database).Collection("config"),
+		Collection: client.Database(database).Collection("configs"),
 	}
 }
 
@@ -82,14 +82,23 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 func (cr *ConfigRepository) FindAllByService(service string) ([]*entity.Config, error) {
      filter := bson.M{"service": service}
      cursor, err := cr.Collection.Find(context.Background(), filter)
-     if err != nil {
-          return nil, err
-     }
-     var results []*entity.Config
-     if err := cursor.All(context.Background(), &results); err != nil {
-          return nil, err
-     }
-     return results, nil
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var results []*entity.Config
+	for cursor.Next(context.Background()) {
+		var result entity.Config
+		if err := cursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return results, nil
 }
 
 func (cr *ConfigRepository) FindOneById(id string) (*entity.Config, error) {

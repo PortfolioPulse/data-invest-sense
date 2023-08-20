@@ -9,6 +9,13 @@
     },
     "lint": {
       "executor": "@nx-go/nx-go:lint"
+    },
+    "go-tidy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go mod tidy",
+        "cwd": "libs/golang/go-goid"
+      }
     }
   },
   "tags": []

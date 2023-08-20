@@ -1,0 +1,93 @@
+asyncapi: 2.3.0
+info:
+  title: Service API
+  version: 1.0.0
+
+servers:
+  Webserver:
+    url: http://localhost:8000
+    protocol: http
+    description: Default RabbitMQ server for events
+
+  rabbitmq:
+    url: amqp://localhost:5672
+    protocol: amqp
+    description: RabbitMQ server for publishing events
+
+channels:
+  /service/{service}/source/{source}:
+    publish:
+      summary: Publishes data to be persisted and triggers event
+      operationId: publishData
+      message:
+        name: PublishDataRequest
+        title: Publish Data Request
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/InputOutputDTO'
+        traits:
+          - bindings:
+              amqp:
+                exchange:
+                  name: inputs  # Replace with your exchange name
+                  type: direct  # Replace with the desired exchange type
+                  durable: true
+                  autoDelete: false
+
+    'x-amqp-exchange': inputs  # Additional exchange information for RabbitMQ
+
+    bindings:
+      http:
+        type: request
+        method: post
+        headers:
+          Content-Type:
+            type: string
+            enum: [application/json]
+        bindingVersion: 0.1.0
+        properties:
+          payload:
+            $ref: '#/components/schemas/InputInputDTO'
+
+components:
+  schemas:
+    Metadata:
+      type: object
+      properties:
+        processing_id:
+          type: string
+        processing_timestamp:
+          type: string
+        source:
+          type: string
+        service:
+          type: string
+
+    Status:
+      type: object
+      properties:
+        code:
+          type: integer
+        detail:
+          type: string
+
+    InputInputDTO:
+      type: object
+      properties:
+        data:
+          type: object
+
+    InputOutputDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        data:
+          type: object
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        status:
+          $ref: '#/components/schemas/Status'

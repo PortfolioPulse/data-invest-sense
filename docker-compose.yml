@@ -19,16 +19,52 @@ services:
     networks:
       - invest-sense-network
 
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+    networks:
+      - invest-sense-network
+
   lake-gateway:
     image: fabiocaffarello/lake-gateway:latest
     container_name: lake-gateway
     ports:
-      - 8000:8000
+      - 8001:8000
+      - 50051:50051
+      - 4001:4000
     depends_on:
       rabbitmq:
         condition: service_healthy
-      # mongodb:
-      #   condition: service_healthy
+    networks:
+      - invest-sense-network
+
+  lake-controller:
+    image: fabiocaffarello/lake-controller:latest
+    container_name: lake-controller
+    ports:
+      - 8002:8000
+      - 50052:50051
+      - 4002:4000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
+  lake-repository:
+    image: fabiocaffarello/lake-repository:latest
+    container_name: lake-repository
+    ports:
+      - 8003:8000
+      - 50053:50051
+      - 4003:4000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - invest-sense-network
 
@@ -57,16 +93,6 @@ services:
   #   #   - rabbitmq
   #   networks:
   #     - invest-sense
-
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    ports:
-      - 27017:27017
-    volumes:
-      - ./data:/data/db
-    networks:
-      - invest-sense-network
 
 networks:
   invest-sense-network:

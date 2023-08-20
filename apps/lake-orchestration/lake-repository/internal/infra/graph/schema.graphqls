@@ -1,0 +1,24 @@
+scalar JSON
+
+type Schema {
+  id: ID!
+  schemaType: String!
+  service: String!
+  source: String!
+  JsonSchema: JSON!
+  schemaId: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+
+input SchemaInput {
+  schemaType: String!
+  service: String!
+  source: String!
+  JsonSchema: JSON!
+}
+
+type Mutation {
+  createSchema(input: SchemaInput!): Schema!
+}

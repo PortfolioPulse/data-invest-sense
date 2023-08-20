@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"apps/lake-orchestation/lake-gateway/internal/entity"
+	"apps/lake-orchestration/lake-gateway/internal/entity"
 	"fmt"
 	"libs/golang/events"
 	"time"

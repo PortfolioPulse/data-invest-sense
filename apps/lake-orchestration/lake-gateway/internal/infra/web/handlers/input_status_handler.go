@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"apps/lake-orchestation/lake-gateway/internal/entity"
-	"apps/lake-orchestation/lake-gateway/internal/usecase"
+	"apps/lake-orchestration/lake-gateway/internal/entity"
+	"apps/lake-orchestration/lake-gateway/internal/usecase"
 	"encoding/json"
 	"libs/golang/events"
 	"net/http"

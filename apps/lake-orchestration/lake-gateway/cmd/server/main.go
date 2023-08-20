@@ -1,20 +1,20 @@
 package main
 
 import (
-	"apps/lake-orchestation/lake-gateway/configs"
-	"apps/lake-orchestation/lake-gateway/internal/event/handler"
-	"apps/lake-orchestation/lake-gateway/internal/infra/graph"
-	"apps/lake-orchestation/lake-gateway/internal/infra/grpc/pb"
-	"apps/lake-orchestation/lake-gateway/internal/infra/grpc/service"
-	"apps/lake-orchestation/lake-gateway/internal/infra/web/webserver"
+	"apps/lake-orchestration/lake-gateway/internal/event/handler"
+	"apps/lake-orchestration/lake-gateway/internal/infra/graph"
+	"apps/lake-orchestration/lake-gateway/internal/infra/grpc/pb"
+	"apps/lake-orchestration/lake-gateway/internal/infra/grpc/service"
+	"apps/lake-orchestration/lake-gateway/internal/infra/web/webserver"
 	"context"
 	"fmt"
-	"libs/golang/events"
 	"net"
 	"net/http"
 	"time"
 
 	mongoClient "libs/golang/go-mongodb/client"
+     "libs/golang/go-config/configs"
+	"libs/golang/events"
 	"libs/golang/go-rabbitmq/queue"
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
@@ -32,15 +32,12 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	mongoDB, _ := getMongoDBClient(configs, ctx)
+	mongoDB := getMongoDBClient(configs, ctx)
 	client := mongoDB.Client
 	defer client.Disconnect(ctx)
 
 	// Connect to RabbitMQ with retries
-	rabbitMQ, err := getRabbitMQChannel(configs)
-	if err != nil {
-		panic(err)
-	}
+	rabbitMQ := getRabbitMQChannel(configs)
 	defer rabbitMQ.Close()
 
 	eventDispatcher := events.NewEventDispatcher()
@@ -68,7 +65,7 @@ func main() {
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
 
-	// GRPC
+	// gRPC
 	grpcServer := grpc.NewServer()
 	createInputService := service.NewInputService(*createInputUseCase)
 	pb.RegisterInputServiceServer(grpcServer, createInputService)
@@ -92,7 +89,7 @@ func main() {
 	http.ListenAndServe(fmt.Sprintf(":%s", configs.GraphQLServerPort), nil)
 }
 
-func getRabbitMQChannel(config configs.Config) (*queue.RabbitMQ, error) {
+func getRabbitMQChannel(config configs.Config) *queue.RabbitMQ {
 	rabbitMQ := queue.NewRabbitMQ(
 		config.RabbitMQUser,
 		config.RabbitMQPassword,
@@ -106,13 +103,13 @@ func getRabbitMQChannel(config configs.Config) (*queue.RabbitMQ, error) {
 	)
 	_, err := rabbitMQ.Connect()
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 	rabbitMQ.DeclareExchange(config.RabbitMQExchange, config.RabbitMQExchangeType)
-	return rabbitMQ, nil
+	return rabbitMQ
 }
 
-func getMongoDBClient(configs configs.Config, ctx context.Context) (*mongoClient.MongoDB, error) {
+func getMongoDBClient(configs configs.Config, ctx context.Context) *mongoClient.MongoDB {
 	mongoDB := mongoClient.NewMongoDB(
           configs.DBDriver,
 		configs.DBUser,
@@ -128,5 +125,5 @@ func getMongoDBClient(configs configs.Config, ctx context.Context) (*mongoClient
 		panic(err)
 	}
 
-	return mongoDB, nil
+	return mongoDB
 }

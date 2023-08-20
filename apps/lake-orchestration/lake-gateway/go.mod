@@ -1,4 +1,4 @@
-module apps/lake-orchestation/lake-gateway
+module apps/lake-orchestration/lake-gateway
 
 go 1.20
 
@@ -8,7 +8,6 @@ require (
 	github.com/go-chi/jwtauth v1.2.0
 	github.com/google/wire v0.5.0
 	github.com/spf13/viper v1.16.0
-	github.com/streadway/amqp v1.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/vektah/gqlparser/v2 v2.5.8
 	go.mongodb.org/mongo-driver v1.12.1

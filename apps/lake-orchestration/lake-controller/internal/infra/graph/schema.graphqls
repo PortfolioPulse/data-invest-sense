@@ -1,0 +1,36 @@
+scalar JSON
+
+type JobDependencies {
+  service: String!
+  source: String!
+}
+
+type Config {
+  id: ID!
+  name: String!
+  active: Boolean!
+  service: String!
+  source: String!
+  context: String!
+  dependsOn: [JobDependencies]
+  jobParams: JSON!
+}
+
+input JobDependenciesInput {
+  service: String!
+  source: String!
+}
+
+input ConfigInput {
+  name: String!
+  active: Boolean!
+  service: String!
+  source: String!
+  context: String!
+  dependsOn: [JobDependenciesInput]
+  jobParams: JSON!
+}
+
+type Mutation {
+  createConfig(input: ConfigInput!): Config!
+}

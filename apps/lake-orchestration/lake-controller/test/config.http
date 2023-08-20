@@ -1,0 +1,18 @@
+POST http://localhost:8002/configs HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "stocks-config",
+  "active": true,
+  "service": "file-downloader",
+  "source": "stocks",
+  "context": "us",
+  "dependsOn": [
+    {"service": "file-downloader", "source": "fundamentus"}
+  ],
+  "jobParameters": {
+    "url": "https://testhost.com/stocks"
+  }
+}
+###
+GET http://localhost:8002/configs HTTP/1.1
