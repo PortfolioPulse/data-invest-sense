@@ -65,7 +65,7 @@
         "cwd": "apps/lake-orchestration/lake-controller"
       }
     },
-    "build-docker": {
+    "image": {
       "executor": "nx:run-commands",
       "dependsOn": [
         "build-go"
@@ -74,7 +74,11 @@
         "command": "docker build -t fabiocaffarello/lake-controller:latest -f ./Dockerfile.prod .",
         "cwd": "apps/lake-orchestration/lake-controller"
       }
-    }
-  },
-  "tags": []
+    },
+    "controller-configs": {
+        "executor": "@data-invest-sense/repo-settings:controller-configs",
+        "cwd": "apps/lake-orchestration/lake-controller"
+    },
+    "tags": ["scope:lake-orchestration", "lang:go"]
+  }
 }

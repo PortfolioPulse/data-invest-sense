@@ -2,17 +2,29 @@ POST http://localhost:8002/configs HTTP/1.1
 Content-Type: application/json
 
 {
-  "name": "stocks-config",
+  "name": "cnep-config",
   "active": true,
   "service": "file-downloader",
-  "source": "stocks",
-  "context": "us",
-  "dependsOn": [
-    {"service": "file-downloader", "source": "fundamentus"}
-  ],
+  "source": "cnep",
+  "context": "br",
+  "serviceParameters": {
+    "jobHandler": "zip_handler"
+  },
   "jobParameters": {
-    "url": "https://testhost.com/stocks"
+    "url": "https://portaldatransparencia.gov.br/download-de-dados/cnep/{}"
   }
 }
+
 ###
+
 GET http://localhost:8002/configs HTTP/1.1
+
+###
+
+GET http://localhost:8002/configs/file-downloader-cnep HTTP/1.1
+
+###
+
+GET http://localhost:8002/configs/service/file-downloader HTTP/1.1
+
+###

@@ -3,6 +3,7 @@ go 1.20
 use (
 	apps/apis/lake-manager
 	apps/lake-orchestration/lake-controller
+	apps/lake-orchestration/lake-events
 	apps/lake-orchestration/lake-gateway
 	apps/lake-orchestration/lake-repository
 	libs/golang/events

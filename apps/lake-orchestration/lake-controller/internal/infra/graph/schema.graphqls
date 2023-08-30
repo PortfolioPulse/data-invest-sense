@@ -13,7 +13,10 @@ type Config {
   source: String!
   context: String!
   dependsOn: [JobDependencies]
-  jobParams: JSON!
+  serviceParameters: JSON!
+  jobParameters: JSON!
+  createdAt: String!
+  updatedAt: String!
 }
 
 input JobDependenciesInput {
@@ -28,7 +31,8 @@ input ConfigInput {
   source: String!
   context: String!
   dependsOn: [JobDependenciesInput]
-  jobParams: JSON!
+  serviceParameters: JSON!
+  jobParameters: JSON!
 }
 
 type Mutation {

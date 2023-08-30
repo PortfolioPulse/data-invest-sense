@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 from dataclasses import dataclass
 import requests
+from pyminio.pyminio import minio_client
 
 
 logger = setup_logging(__name__)
@@ -51,10 +52,9 @@ class Job(Handler):
 
     def run(self, data):
         input = self._get_job_input(data)
-        logger.info("sleeping for 30 seconds")
-        # time.sleep(30)
         logger.info(f"Job triggered with input: {input}")
         response = self.make_request(input)
+        minio = minio_client()
         logger.info(f"Job _get_endpoint: {response.status_code}")
-
-
+        uri = minio.upload_bytes("raw-br-source-cnep", "test-object", response.content)
+        logger.info(f"File storage uri: {uri}")

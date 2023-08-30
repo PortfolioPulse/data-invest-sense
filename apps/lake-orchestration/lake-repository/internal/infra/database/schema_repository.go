@@ -45,15 +45,15 @@ func (sr *SchemaRepository) getOneById(id string) (*entity.Schema, error) {
 
 func (sr *SchemaRepository) SaveSchema(schema *entity.Schema) error {
 	// Check if the document already exists based on the ID
-	_, err := sr.getOneById(string(schema.ID))
+	existingSchema, err := sr.getOneById(string(schema.ID))
 	if err != nil {
 		// Insert new document
-          schema.CreatedAt = time.Now().Format(time.RFC3339)
+		schema.CreatedAt = time.Now().Format(time.RFC3339)
 		_, err := sr.Collection.InsertOne(context.Background(), bson.M{
 			"id":          schema.ID,
 			"schema_type": schema.SchemaType,
 			"json_schema": schema.JsonSchema,
-               "service":     schema.Service,
+			"service":     schema.Service,
 			"schema_id":   schema.SchemaID,
 			"created_at":  schema.CreatedAt,
 			"updated_at":  schema.UpdatedAt,
@@ -68,9 +68,9 @@ func (sr *SchemaRepository) SaveSchema(schema *entity.Schema) error {
 			"$set": bson.M{
 				"schema_type": schema.SchemaType,
 				"json_schema": schema.JsonSchema,
-                    "service":     schema.Service,
+				"service":     schema.Service,
 				"schema_id":   schema.SchemaID,
-				"created_at":  schema.CreatedAt,
+				"created_at":  existingSchema.CreatedAt,
 				"updated_at":  schema.UpdatedAt,
 			},
 		}
@@ -91,24 +91,24 @@ func (sr *SchemaRepository) FindOneById(id string) (*entity.Schema, error) {
 }
 
 func (sr *SchemaRepository) FindAll() ([]*entity.Schema, error) {
-     cursor, err := sr.Collection.Find(context.Background(), bson.M{})
-     if err != nil {
-          return nil, err
-     }
-     defer cursor.Close(context.Background())
+	cursor, err := sr.Collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
 
-     var results []*entity.Schema
-     for cursor.Next(context.Background()) {
-          var result entity.Schema
-          if err := cursor.Decode(&result); err != nil {
-               return nil, err
-          }
-          results = append(results, &result)
-     }
-     if err := cursor.Err(); err != nil {
-          return nil, err
-     }
-     return results, nil
+	var results []*entity.Schema
+	for cursor.Next(context.Background()) {
+		var result entity.Schema
+		if err := cursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return results, nil
 }
 
 func (sr *SchemaRepository) FindAllByService(service string) ([]*entity.Schema, error) {
@@ -132,9 +132,3 @@ func (sr *SchemaRepository) FindAllByService(service string) ([]*entity.Schema, 
 	}
 	return results, nil
 }
-
-
-
-
-
-

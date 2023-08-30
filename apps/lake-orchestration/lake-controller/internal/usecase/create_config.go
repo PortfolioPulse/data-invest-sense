@@ -24,19 +24,8 @@ func NewCreateConfigUseCase(
 	}
 }
 
-func ConvertEntityToUsecaseDependencies(entityDeps []entity.JobDependencies) []JobDependencies {
-	usecaseDeps := make([]JobDependencies, len(entityDeps))
-	for i, dep := range entityDeps {
-		usecaseDeps[i] = JobDependencies{
-			Service: dep.Service,
-			Source:  dep.Source,
-		}
-	}
-	return usecaseDeps
-}
-
 func (ccu *CreateConfigUseCase) Execute(config ConfigInputDTO) (ConfigOutputDTO, error) {
-     entityJobDependencies := make([]entity.JobDependencies, len(config.DependsOn))
+	entityJobDependencies := make([]entity.JobDependencies, len(config.DependsOn))
 	for i, dep := range config.DependsOn {
 		entityJobDependencies[i] = entity.JobDependencies{
 			Service: dep.Service,
@@ -44,7 +33,7 @@ func (ccu *CreateConfigUseCase) Execute(config ConfigInputDTO) (ConfigOutputDTO,
 		}
 	}
 
-     configEntity, err := entity.NewConfig(
+	configEntity, err := entity.NewConfig(
 		config.Name,
 		config.Active,
 		config.Service,
@@ -52,6 +41,7 @@ func (ccu *CreateConfigUseCase) Execute(config ConfigInputDTO) (ConfigOutputDTO,
 		config.Context,
 		entityJobDependencies,
 		config.JobParameters,
+		config.ServiceParameters,
 	)
 	if err != nil {
 		return ConfigOutputDTO{}, err
@@ -62,17 +52,20 @@ func (ccu *CreateConfigUseCase) Execute(config ConfigInputDTO) (ConfigOutputDTO,
 		return ConfigOutputDTO{}, err
 	}
 
-     usecaseDeps := ConvertEntityToUsecaseDependencies(configEntity.DependsOn)
+	usecaseDeps := ConvertEntityToUsecaseDependencies(configEntity.DependsOn)
 
 	dto := ConfigOutputDTO{
-		ID:            string(configEntity.ID),
-		Name:          configEntity.Name,
-		Active:        configEntity.Active,
-		Service:       configEntity.Service,
-		Source:        configEntity.Source,
-		Context:       configEntity.Context,
-		DependsOn:     usecaseDeps,
-		JobParameters: configEntity.JobParameters,
+		ID:                string(configEntity.ID),
+		Name:              configEntity.Name,
+		Active:            configEntity.Active,
+		Service:           configEntity.Service,
+		Source:            configEntity.Source,
+		Context:           configEntity.Context,
+		DependsOn:         usecaseDeps,
+		ServiceParameters: configEntity.ServiceParamaters,
+		JobParameters:     configEntity.JobParameters,
+		CreatedAt:         configEntity.CreatedAt,
+		UpdatedAt:         configEntity.UpdatedAt,
 	}
 
 	ccu.ConfigCreated.SetPayload(dto)

@@ -2,35 +2,30 @@ package handlers
 
 import (
 	"encoding/json"
-	// "fmt"
-	// "io"
 	"net/http"
 
 	"apps/lake-orchestration/lake-repository/internal/entity"
 	"apps/lake-orchestration/lake-repository/internal/usecase"
 	"libs/golang/events"
 
-	"github.com/go-chi/jwtauth"
+	"github.com/go-chi/chi/v5"
 )
 
 type WebSchemaHandler struct {
 	EventDispatcher    events.EventDispatcherInterface
 	SchemaRepository   entity.SchemaInterface
 	SchemaCreatedEvent events.EventInterface
-     TokenAuth          *jwtauth.JWTAuth
 }
 
 func NewWebSchemaHandler(
 	EventDispatcher events.EventDispatcherInterface,
 	SchemaRepository entity.SchemaInterface,
 	SchemaCreatedEvent events.EventInterface,
-     TokenAuth *jwtauth.JWTAuth,
 ) *WebSchemaHandler {
 	return &WebSchemaHandler{
 		EventDispatcher:    EventDispatcher,
 		SchemaRepository:   SchemaRepository,
 		SchemaCreatedEvent: SchemaCreatedEvent,
-          TokenAuth:          TokenAuth,
 	}
 }
 
@@ -47,7 +42,6 @@ func (h *WebSchemaHandler) CreateSchema(w http.ResponseWriter, r *http.Request) 
 		h.SchemaRepository,
 		h.SchemaCreatedEvent,
 		h.EventDispatcher,
-          h.TokenAuth,
 	)
 
 	output, err := createSchema.Execute(dto)
@@ -63,20 +57,58 @@ func (h *WebSchemaHandler) CreateSchema(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+func (h *WebSchemaHandler) ListOneSchemaById(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	listOneSchemaById := usecase.NewListOneSchemaByIdUseCase(
+		h.SchemaRepository,
+	)
+
+	output, err := listOneSchemaById.Execute(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (h *WebSchemaHandler) ListAllSchemas(w http.ResponseWriter, r *http.Request) {
-     listAllSchemas := usecase.NewListAllSchemasUseCase(
-          h.SchemaRepository,
-     )
+	listAllSchemas := usecase.NewListAllSchemasUseCase(
+		h.SchemaRepository,
+	)
 
-     output, err := listAllSchemas.Execute()
-     if err != nil {
-          http.Error(w, err.Error(), http.StatusInternalServerError)
-          return
-     }
+	output, err := listAllSchemas.Execute()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-     err = json.NewEncoder(w).Encode(output)
-     if err != nil {
-          http.Error(w, err.Error(), http.StatusInternalServerError)
-          return
-     }
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *WebSchemaHandler) ListAllSchemasByService(w http.ResponseWriter, r *http.Request) {
+	service := chi.URLParam(r, "service")
+	listAllSchemasByService := usecase.NewListAllSchemasByServiceUseCase(
+		h.SchemaRepository,
+	)
+
+	output, err := listAllSchemasByService.Execute(service)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

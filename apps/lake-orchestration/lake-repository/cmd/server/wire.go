@@ -14,7 +14,6 @@ import (
 
      "github.com/google/wire"
      "go.mongodb.org/mongo-driver/mongo"
-     "github.com/go-chi/jwtauth"
 )
 
 
@@ -39,7 +38,7 @@ var setSchemaCreatedEvent = wire.NewSet(
 )
 
 // [Use Case]
-func NewCreateSchemaUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string, tokenAuth *jwtauth.JWTAuth) *usecase.CreateSchemaUseCase {
+func NewCreateSchemaUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *usecase.CreateSchemaUseCase {
      wire.Build(
           setSchemaRepositoryDependency,
           setSchemaCreatedEvent,
@@ -49,7 +48,7 @@ func NewCreateSchemaUseCase(client *mongo.Client, eventDispatcher events.EventDi
 }
 
 // [Web Handler]
-func NewWebSchemaHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string, tokenAuth *jwtauth.JWTAuth) *webHandler.WebSchemaHandler {
+func NewWebSchemaHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *webHandler.WebSchemaHandler {
      wire.Build(
           setSchemaRepositoryDependency,
           setSchemaCreatedEvent,

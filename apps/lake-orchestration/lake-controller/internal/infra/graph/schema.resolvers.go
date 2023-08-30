@@ -11,7 +11,7 @@ import (
 )
 
 // CreateConfig is the resolver for the createConfig field.
-func (r *mutationResolver) CreateConfig(ctx context.Context, input model1.ConfigInput, source string, service string) (*model1.Config, error) {
+func (r *mutationResolver) CreateConfig(ctx context.Context, input model1.ConfigInput) (*model1.Config, error) {
 	panic(fmt.Errorf("not implemented: CreateConfig - createConfig"))
 }
 

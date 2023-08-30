@@ -9,6 +9,8 @@ notes/
 reports
 .env
 .vscode
+.cache
+__pycache__
 
 # compiled output
 dist

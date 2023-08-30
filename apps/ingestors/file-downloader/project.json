@@ -77,7 +77,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "docker build -t ingestors-file-downloader:latest --build-arg GATEWAY_ENVIRONMENT=true --build-arg RABBITMQ_GATEWAY_HOST=rabbitmq --build-arg RABBITMQ_PORT_6572_TCP=tcp://guest:guest@gateway_host:5672/ -f ./Dockerfile .",
+        "command": "docker build -t ingestors-file-downloader:latest --build-arg GATEWAY_ENVIRONMENT=true --build-arg RABBITMQ_GATEWAY_HOST=rabbitmq --build-arg RABBITMQ_PORT_6572_TCP=tcp://guest:guest@gateway_host:5672/ --build-arg LAKE_CONTROLLER_GATEWAY_HOST=lake-controller --build-arg LAKE_CONTROLLER_PORT_8000_TCP=tcp://gateway_host:8000 --build-arg MINIO_GATEWAY_HOST=minio --build-arg MINIO_PORT_9000_TCP=gateway_host:9000 --build-arg MINIO_ACCESS_KEY=new-minio-root-user --build-arg MINIO_SECRET_KEY=new-minio-root-password -f ./Dockerfile .",
         "cwd": "apps/ingestors/file-downloader"
       }
     },
@@ -87,7 +87,11 @@
         "command": "poetry run python file_downloader/main.py",
         "cwd": "apps/ingestors/file-downloader"
       }
+    },
+    "minio-buckets": {
+        "executor": "@data-invest-sense/repo-settings:minio-buckets",
+        "cwd": "apps/ingestors/file-downloader"
     }
   },
-  "tags": []
+  "tags": ["scope:lake-ingestors", "lang:python"]
 }

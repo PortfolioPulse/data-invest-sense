@@ -45,14 +45,17 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Config struct {
-		Active    func(childComplexity int) int
-		Context   func(childComplexity int) int
-		DependsOn func(childComplexity int) int
-		ID        func(childComplexity int) int
-		JobParams func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Service   func(childComplexity int) int
-		Source    func(childComplexity int) int
+		Active            func(childComplexity int) int
+		Context           func(childComplexity int) int
+		CreatedAt         func(childComplexity int) int
+		DependsOn         func(childComplexity int) int
+		ID                func(childComplexity int) int
+		JobParameters     func(childComplexity int) int
+		Name              func(childComplexity int) int
+		Service           func(childComplexity int) int
+		ServiceParameters func(childComplexity int) int
+		Source            func(childComplexity int) int
+		UpdatedAt         func(childComplexity int) int
 	}
 
 	JobDependencies struct {
@@ -61,7 +64,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateConfig func(childComplexity int, input model.ConfigInput, source string, service string) int
+		CreateConfig func(childComplexity int, input model.ConfigInput) int
 	}
 
 	Query struct {
@@ -69,7 +72,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateConfig(ctx context.Context, input model.ConfigInput, source string, service string) (*model.Config, error)
+	CreateConfig(ctx context.Context, input model.ConfigInput) (*model.Config, error)
 }
 
 type executableSchema struct {
@@ -101,6 +104,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Config.Context(childComplexity), true
 
+	case "Config.createdAt":
+		if e.complexity.Config.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Config.CreatedAt(childComplexity), true
+
 	case "Config.dependsOn":
 		if e.complexity.Config.DependsOn == nil {
 			break
@@ -115,12 +125,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Config.ID(childComplexity), true
 
-	case "Config.jobParams":
-		if e.complexity.Config.JobParams == nil {
+	case "Config.jobParameters":
+		if e.complexity.Config.JobParameters == nil {
 			break
 		}
 
-		return e.complexity.Config.JobParams(childComplexity), true
+		return e.complexity.Config.JobParameters(childComplexity), true
 
 	case "Config.name":
 		if e.complexity.Config.Name == nil {
@@ -136,12 +146,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Config.Service(childComplexity), true
 
+	case "Config.serviceParameters":
+		if e.complexity.Config.ServiceParameters == nil {
+			break
+		}
+
+		return e.complexity.Config.ServiceParameters(childComplexity), true
+
 	case "Config.source":
 		if e.complexity.Config.Source == nil {
 			break
 		}
 
 		return e.complexity.Config.Source(childComplexity), true
+
+	case "Config.updatedAt":
+		if e.complexity.Config.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Config.UpdatedAt(childComplexity), true
 
 	case "JobDependencies.service":
 		if e.complexity.JobDependencies.Service == nil {
@@ -167,7 +191,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateConfig(childComplexity, args["input"].(model.ConfigInput), args["source"].(string), args["service"].(string)), true
+		return e.complexity.Mutation.CreateConfig(childComplexity, args["input"].(model.ConfigInput)), true
 
 	}
 	return 0, false
@@ -307,24 +331,6 @@ func (ec *executionContext) field_Mutation_createConfig_args(ctx context.Context
 		}
 	}
 	args["input"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["source"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["source"] = arg1
-	var arg2 string
-	if tmp, ok := rawArgs["service"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("service"))
-		arg2, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["service"] = arg2
 	return args, nil
 }
 
@@ -692,8 +698,8 @@ func (ec *executionContext) fieldContext_Config_dependsOn(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Config_jobParams(ctx context.Context, field graphql.CollectedField, obj *model.Config) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Config_jobParams(ctx, field)
+func (ec *executionContext) _Config_serviceParameters(ctx context.Context, field graphql.CollectedField, obj *model.Config) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Config_serviceParameters(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -706,7 +712,7 @@ func (ec *executionContext) _Config_jobParams(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.JobParams, nil
+		return obj.ServiceParameters, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -723,7 +729,7 @@ func (ec *executionContext) _Config_jobParams(ctx context.Context, field graphql
 	return ec.marshalNJSON2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Config_jobParams(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Config_serviceParameters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Config",
 		Field:      field,
@@ -731,6 +737,138 @@ func (ec *executionContext) fieldContext_Config_jobParams(ctx context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type JSON does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Config_jobParameters(ctx context.Context, field graphql.CollectedField, obj *model.Config) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Config_jobParameters(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.JobParameters, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNJSON2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Config_jobParameters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Config",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type JSON does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Config_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Config) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Config_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Config_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Config",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Config_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Config) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Config_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Config_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Config",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -838,7 +976,7 @@ func (ec *executionContext) _Mutation_createConfig(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateConfig(rctx, fc.Args["input"].(model.ConfigInput), fc.Args["source"].(string), fc.Args["service"].(string))
+		return ec.resolvers.Mutation().CreateConfig(rctx, fc.Args["input"].(model.ConfigInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -877,8 +1015,14 @@ func (ec *executionContext) fieldContext_Mutation_createConfig(ctx context.Conte
 				return ec.fieldContext_Config_context(ctx, field)
 			case "dependsOn":
 				return ec.fieldContext_Config_dependsOn(ctx, field)
-			case "jobParams":
-				return ec.fieldContext_Config_jobParams(ctx, field)
+			case "serviceParameters":
+				return ec.fieldContext_Config_serviceParameters(ctx, field)
+			case "jobParameters":
+				return ec.fieldContext_Config_jobParameters(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Config_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Config_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Config", field.Name)
 		},
@@ -2806,7 +2950,7 @@ func (ec *executionContext) unmarshalInputConfigInput(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "active", "service", "source", "context", "dependsOn", "jobParams"}
+	fieldsInOrder := [...]string{"name", "active", "service", "source", "context", "dependsOn", "serviceParameters", "jobParameters"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2867,15 +3011,24 @@ func (ec *executionContext) unmarshalInputConfigInput(ctx context.Context, obj i
 				return it, err
 			}
 			it.DependsOn = data
-		case "jobParams":
+		case "serviceParameters":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("jobParams"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serviceParameters"))
 			data, err := ec.unmarshalNJSON2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.JobParams = data
+			it.ServiceParameters = data
+		case "jobParameters":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("jobParameters"))
+			data, err := ec.unmarshalNJSON2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.JobParameters = data
 		}
 	}
 
@@ -2971,8 +3124,23 @@ func (ec *executionContext) _Config(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "dependsOn":
 			out.Values[i] = ec._Config_dependsOn(ctx, field, obj)
-		case "jobParams":
-			out.Values[i] = ec._Config_jobParams(ctx, field, obj)
+		case "serviceParameters":
+			out.Values[i] = ec._Config_serviceParameters(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "jobParameters":
+			out.Values[i] = ec._Config_jobParameters(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._Config_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Config_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

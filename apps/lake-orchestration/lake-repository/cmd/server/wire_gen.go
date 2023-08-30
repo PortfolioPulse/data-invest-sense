@@ -12,7 +12,6 @@ import (
 	"apps/lake-orchestration/lake-repository/internal/infra/database"
 	"apps/lake-orchestration/lake-repository/internal/infra/web/handlers"
 	"apps/lake-orchestration/lake-repository/internal/usecase"
-	"github.com/go-chi/jwtauth"
 	"github.com/google/wire"
 	"go.mongodb.org/mongo-driver/mongo"
 	"libs/golang/events"
@@ -21,18 +20,18 @@ import (
 // Injectors from wire.go:
 
 // [Use Case]
-func NewCreateSchemaUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string, tokenAuth *jwtauth.JWTAuth) *usecase.CreateSchemaUseCase {
+func NewCreateSchemaUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *usecase.CreateSchemaUseCase {
 	schemaRepository := database.NewSchemaRepository(client, database2)
 	schemaCreated := event.NewSchemaCreated()
-	createSchemaUseCase := usecase.NewCreateSchemaUseCase(schemaRepository, schemaCreated, eventDispatcher, tokenAuth)
+	createSchemaUseCase := usecase.NewCreateSchemaUseCase(schemaRepository, schemaCreated, eventDispatcher)
 	return createSchemaUseCase
 }
 
 // [Web Handler]
-func NewWebSchemaHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string, tokenAuth *jwtauth.JWTAuth) *handlers.WebSchemaHandler {
+func NewWebSchemaHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *handlers.WebSchemaHandler {
 	schemaRepository := database.NewSchemaRepository(client, database2)
 	schemaCreated := event.NewSchemaCreated()
-	webSchemaHandler := handlers.NewWebSchemaHandler(eventDispatcher, schemaRepository, schemaCreated, tokenAuth)
+	webSchemaHandler := handlers.NewWebSchemaHandler(eventDispatcher, schemaRepository, schemaCreated)
 	return webSchemaHandler
 }
 

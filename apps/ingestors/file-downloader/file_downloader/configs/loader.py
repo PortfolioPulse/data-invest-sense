@@ -1,3 +1,4 @@
+# FIXME: This is a temporary solution. We need to find a better way to load configs.
 import json
 from dataclasses import dataclass, field
 from pydotenv.dotenv import DotEnvLoader
@@ -5,6 +6,7 @@ from pathlib import Path
 from typing import Dict, Any
 import asyncio
 from pylog.log import setup_logging
+from pycontroller.client import async_pycontroller_client
 
 logger = setup_logging(__name__)
 
@@ -13,7 +15,8 @@ class JobMetadataParams:
     _id: str
     name: str
     context: str
-    rootPath: Path
+    source: str
+    service: str
 
 @dataclass
 class JobParams:
@@ -26,46 +29,47 @@ class Config:
     jobMetadataParams: JobMetadataParams
     jobParams: JobParams
 
-@dataclass
-class LoadConfig:
-    path: Path
-    configRaw: dict = field(init=False)
 
-    async def _read_config(self):
-        with open(self.path, 'r') as file:
-            self.configRaw = json.load(file)
+class SetConfigParams:
 
-    def _set_job_params(self):
+    def set_job_params(self, configRaw):
         return JobParams(
-            jobHandler=self.configRaw["jobHandler"],
-            active=self.configRaw["active"],
-            url=self.configRaw["jobParams"]["url"],
+            jobHandler=configRaw["serviceParameters"]["jobHandler"],
+            active=configRaw["active"],
+            url=configRaw["jobParameters"]["url"],
         )
 
-    def _set_job_metadata_params(self):
+    def set_job_metadata_params(self, configRaw):
         return JobMetadataParams(
-            _id=self.configRaw["id"],
-            name=self.configRaw["name"],
-            context=self.configRaw["context"],
-            rootPath=self.path.parent,
-        )
-
-    async def export_config(self):
-        await self._read_config()
-        return Config(
-            jobMetadataParams=self._set_job_metadata_params(),
-            jobParams=self._set_job_params()
+            _id=configRaw["id"],
+            name=configRaw["name"],
+            context=configRaw["context"],
+            source=configRaw["source"],
+            service=configRaw["service"],
         )
 
 
-def find_config_files(config_type: str, env: DotEnvLoader = DotEnvLoader()):
-    job_config_files = list(
-        Path(__file__).parent.joinpath(
-            env.get_variable('CONTEXT_SERVICE')
-        ).rglob(config_type))
-    return job_config_files
+class ConfigLoader(SetConfigParams):
+    def __init__(self) -> None:
+        super().__init__()
+
+    async def fetch_configs_for_service(self, service_name: str):
+        client = async_pycontroller_client()
+        configs = await client.list_all_configs_by_service(service_name)
+        for config in configs:
+            registered_config = Config(
+                jobMetadataParams=self.set_job_metadata_params(config),
+                jobParams=self.set_job_params(config),
+            )
+            register_config(
+                registered_config.jobMetadataParams.context,
+                registered_config.jobMetadataParams._id,
+                registered_config
+            )
+
 
 mapping_config: Dict[str, Dict[str, Config]] = dict()
+
 
 def register_config(context: str, config_id: str, config: Config):
     if context not in mapping_config:
@@ -75,17 +79,8 @@ def register_config(context: str, config_id: str, config: Config):
         logger.info(f"Warning: Duplicate config ID '{config_id}' for context '{context}'. Overwriting existing config.")
     mapping_config[context][config_id] = config
 
-async def _load_config(config_path):
-    config_loader = LoadConfig(config_path)
-    config = await config_loader.export_config()
-    if config.jobParams.active:
-        register_config(
-            config.jobMetadataParams.context,
-            config.jobMetadataParams._id,
-            config
-        )
 
-async def read_config_async():
-    config_files = find_config_files('job-config.json')
-    await asyncio.gather(*[_load_config(config_path) for config_path in config_files])
+async def fetch_configs():
+    service = "file-downloader"
+    await ConfigLoader().fetch_configs_for_service(service_name=service)
     return mapping_config

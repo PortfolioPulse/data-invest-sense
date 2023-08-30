@@ -26,4 +26,14 @@ Content-Type: application/json
 }
 
 ###
+
 GET http://localhost:8003/schemas HTTP/1.1
+
+###
+
+GET http://localhost:8003/schemas/service/file-downloader HTTP/1.1
+
+###
+
+GET http://localhost:8003/schemas/input-file-downloader-stocks-file-downloader-stocks HTTP/1.1
+

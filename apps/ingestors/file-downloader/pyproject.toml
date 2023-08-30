@@ -48,6 +48,14 @@ readme = "README.md"
     path = "../../../libs/python/pysd"
     develop = true
 
+    [tool.poetry.dependencies.py-controller]
+    path = "../../../libs/api-client/python/py-controller"
+    develop = true
+
+    [tool.poetry.dependencies.py-minio]
+    path = "../../../libs/storage-client/python/py-minio"
+    develop = true
+
 [build-system]
 requires = [ "poetry-core" ]
 build-backend = "poetry.core.masonry.api"

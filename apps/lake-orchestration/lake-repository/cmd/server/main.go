@@ -45,15 +45,17 @@ func main() {
 		RabbitMQ: rabbitMQ,
 	})
 
-	createSchemaUseCase := NewCreateSchemaUseCase(client, eventDispatcher, configs.DBName, configs.TokenAuth)
+	createSchemaUseCase := NewCreateSchemaUseCase(client, eventDispatcher, configs.DBName)
 
 	// Web
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 
-	webSchemaHandler := NewWebSchemaHandler(client, eventDispatcher, configs.DBName, configs.TokenAuth)
+	webSchemaHandler := NewWebSchemaHandler(client, eventDispatcher, configs.DBName)
 
 	webserver.AddHandler("/schemas", "POST", "/schemas", webSchemaHandler.CreateSchema)
      webserver.AddHandler("/schemas", "GET", "/schemas", webSchemaHandler.ListAllSchemas)
+     webserver.AddHandler("/schemas", "GET", "/schemas/{id}", webSchemaHandler.ListOneSchemaById)
+     webserver.AddHandler("/schemas", "GET", "/schemas/service/{service}", webSchemaHandler.ListAllSchemasByService)
 
 	fmt.Println("Server is running on port", configs.WebServerPort)
 	go webserver.Start()

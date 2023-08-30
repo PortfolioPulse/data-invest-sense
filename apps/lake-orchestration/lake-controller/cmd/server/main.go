@@ -47,6 +47,7 @@ func main() {
 	})
 
 	createConfigUseCase := NewCreateConfigUseCase(client, eventDispatcher, configs.DBName)
+     healthzUseCase := NewHealthzHandler()
 
 	// Web
 	webserver := webserver.NewWebServer(configs.WebServerPort)
@@ -54,6 +55,11 @@ func main() {
 	webConfigHandler := NewWebConfigHandler(client, eventDispatcher, configs.DBName)
 
 	webserver.AddHandler("/configs", "POST", "/configs", webConfigHandler.CreateConfig)
+     webserver.AddHandler("/configs", "GET", "/configs", webConfigHandler.ListAllConfigs)
+     webserver.AddHandler("/configs", "GET", "/configs/{id}", webConfigHandler.ListOneConfigById)
+     webserver.AddHandler("/configs", "GET", "/configs/service/{service}", webConfigHandler.ListAllConfigsByService)
+
+     webserver.HandleHealthz(healthzUseCase.Healthz)
 
 	fmt.Println("Server is running on port", configs.WebServerPort)
 	go webserver.Start()

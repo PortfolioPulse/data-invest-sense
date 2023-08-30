@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-chi/jwtauth"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -21,7 +20,6 @@ type SchemaRepositorySuite struct {
 	Database   string
 	Collection string
 	repo       *SchemaRepository
-	tokenAuth  *jwtauth.JWTAuth
 }
 
 func TestSchemaRepositorySuite(t *testing.T) {
@@ -38,7 +36,6 @@ func (suite *SchemaRepositorySuite) SetupTest() {
 	suite.Collection = "test-service"
 	suite.log = log.New(os.Stdout, "[SCHEMA-REPOSITORY] ", log.LstdFlags)
 	suite.repo = NewSchemaRepository(suite.Client, suite.Database)
-	suite.tokenAuth = jwtauth.New("HS256", []byte("your-secret-key"), nil)
 }
 
 func (suite *SchemaRepositorySuite) TearDownTest() {
@@ -51,7 +48,7 @@ func (suite *SchemaRepositorySuite) TestSaveSchemaWhenSchemaDoesNotExist() {
 	jsonSchema := map[string]interface{}{
 		"test": "test",
 	}
-	schema, err := entity.NewSchema("test", "test", "test", jsonSchema, suite.tokenAuth)
+	schema, err := entity.NewSchema("test", "test", "test", jsonSchema)
 	suite.NoError(err)
 	err = suite.repo.SaveSchema(schema)
 	suite.NoError(err)
@@ -61,7 +58,7 @@ func (suite *SchemaRepositorySuite) TestFindOneByIdWhenSchemaExists() {
 	jsonSchema := map[string]interface{}{
 		"test": "test",
 	}
-	schema, err := entity.NewSchema("test", "test", "test", jsonSchema, suite.tokenAuth)
+	schema, err := entity.NewSchema("test", "test", "test", jsonSchema)
 	suite.NoError(err)
 
 	err = suite.repo.SaveSchema(schema)
@@ -90,9 +87,9 @@ func (suite *SchemaRepositorySuite) TestFindAll() {
 		"field2":  43,
 		"service": "test", // Make sure each schema has the "service" key
 	}
-	schema1, err := entity.NewSchema("test1", "test", "test1", jsonSchema1, suite.tokenAuth)
+	schema1, err := entity.NewSchema("test1", "test", "test1", jsonSchema1)
 	suite.NoError(err)
-	schema2, err := entity.NewSchema("test2", "test", "test2", jsonSchema2, suite.tokenAuth)
+	schema2, err := entity.NewSchema("test2", "test", "test2", jsonSchema2)
 	suite.NoError(err)
 
 	err = suite.repo.SaveSchema(schema1)
@@ -115,7 +112,7 @@ func (suite *SchemaRepositorySuite) TestSaveSchemaWhenSchemaExist() {
 			"type": "string",
 		},
 	}
-	schema, err := entity.NewSchema("test", "test", "test", jsonSchema, suite.tokenAuth)
+	schema, err := entity.NewSchema("test", "test", "test", jsonSchema)
 	suite.NoError(err)
 
 	err = suite.repo.SaveSchema(schema)
@@ -134,7 +131,7 @@ func (suite *SchemaRepositorySuite) TestSaveSchemaWhenSchemaExist() {
 		},
 	}
 
-	schema, err = entity.NewSchema("test", "test", "test", newJsonSchema, suite.tokenAuth)
+	schema, err = entity.NewSchema("test", "test", "test", newJsonSchema)
 	suite.NoError(err)
 
 	err = suite.repo.SaveSchema(schema)
@@ -161,9 +158,9 @@ func (suite *SchemaRepositorySuite) TestFindAllByServiceWhenSchemasExist() {
 		"field2":  43,
 		"service": "test", // Make sure each schema has the "service" key
 	}
-	schema1, err := entity.NewSchema("test1", "test", "test1", jsonSchema1, suite.tokenAuth)
+	schema1, err := entity.NewSchema("test1", "test", "test1", jsonSchema1)
 	suite.NoError(err)
-	schema2, err := entity.NewSchema("test2", "test", "test2", jsonSchema2, suite.tokenAuth)
+	schema2, err := entity.NewSchema("test2", "test", "test2", jsonSchema2)
 	suite.NoError(err)
 
 	err = suite.repo.SaveSchema(schema1)
@@ -196,9 +193,9 @@ func (suite *SchemaRepositorySuite) TestFindAllByServiceWhenSchemasExistButNotFo
 		"field2":  43,
 		"service": "test", // Make sure each schema has the "service" key
 	}
-	schema1, err := entity.NewSchema("test1", "test", "test1", jsonSchema1, suite.tokenAuth)
+	schema1, err := entity.NewSchema("test1", "test", "test1", jsonSchema1)
 	suite.NoError(err)
-	schema2, err := entity.NewSchema("test2", "test", "test2", jsonSchema2, suite.tokenAuth)
+	schema2, err := entity.NewSchema("test2", "test", "test2", jsonSchema2)
 	suite.NoError(err)
 
 	// Save the schemas

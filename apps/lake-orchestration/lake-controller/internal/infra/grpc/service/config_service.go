@@ -72,13 +72,14 @@ func ConvertJobDependenciesToPbDependsOn(jobDeps []usecase.JobDependencies) []*p
 
 func (s *ConfigService) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) (*pb.CreateConfigResponse, error) {
 	dto := usecase.ConfigInputDTO{
-		Name:          in.Name,
-		Active:        in.Active,
-		Service:       in.Service,
-		Source:        in.Source,
-		Context:       in.Context,
-		DependsOn:     convertDependsOn(in.DependsOn),
-		JobParameters: toMapStringInterface(in.JobParameters),
+		Name:              in.Name,
+		Active:            in.Active,
+		Service:           in.Service,
+		Source:            in.Source,
+		Context:           in.Context,
+		DependsOn:         convertDependsOn(in.DependsOn),
+		ServiceParameters: toMapStringInterface(in.ServiceParameters),
+		JobParameters:     toMapStringInterface(in.JobParameters),
 	}
 	output, err := s.CreateConfigUseCase.Execute(dto)
 	if err != nil {
@@ -86,12 +87,15 @@ func (s *ConfigService) CreateConfig(ctx context.Context, in *pb.CreateConfigReq
 	}
 
 	return &pb.CreateConfigResponse{
-		Id:            output.ID,
-		Active:        output.Active,
-		Service:       output.Service,
-		Source:        output.Source,
-		Context:       output.Context,
-		DependsOn:     ConvertJobDependenciesToPbDependsOn(output.DependsOn),
-		JobParameters: toMapAny(output.JobParameters),
+		Id:                output.ID,
+		Active:            output.Active,
+		Service:           output.Service,
+		Source:            output.Source,
+		Context:           output.Context,
+		DependsOn:         ConvertJobDependenciesToPbDependsOn(output.DependsOn),
+		ServiceParameters: toMapAny(output.ServiceParameters),
+		JobParameters:     toMapAny(output.JobParameters),
+		CreatedAt:         output.CreatedAt,
+		UpdatedAt:         output.UpdatedAt,
 	}, nil
 }

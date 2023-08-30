@@ -65,7 +65,7 @@
         "cwd": "apps/lake-orchestration/lake-repository"
       }
     },
-    "build-docker": {
+    "image": {
       "executor": "nx:run-commands",
       "dependsOn": [
         "build-go"
@@ -76,5 +76,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["scope:lake-orchestration", "lang:go"]
 }

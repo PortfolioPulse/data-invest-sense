@@ -36,6 +36,22 @@ readme = "README.md"
     path = "libs/python/pysd"
     develop = true
 
+    [tool.poetry.dependencies.py-controller]
+    path = "libs/api-client/python/py-controller"
+    develop = true
+
+    [tool.poetry.dependencies.py-request]
+    path = "libs/python/pyrequest"
+    develop = true
+
+    [tool.poetry.dependencies.py-minio]
+    path = "libs/storage-client/python/py-minio"
+    develop = true
+
+    [tool.poetry.dependencies.py-youtube]
+    path = "libs/api-client/python/py-youtube"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 flake8 = "6.0.0"
 autopep8 = "2.0.2"

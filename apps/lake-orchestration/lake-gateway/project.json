@@ -72,7 +72,7 @@
         "cwd": "apps/lake-orchestration/lake-gateway"
       }
     },
-    "build-docker": {
+    "image": {
       "executor": "nx:run-commands",
       "dependsOn": [
         "build-go"
@@ -83,5 +83,5 @@
       }
     }
   },
-  "tags": []
+  "tags": ["scope:lake-orchestration", "lang:go"]
 }

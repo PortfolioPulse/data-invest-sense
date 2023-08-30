@@ -35,8 +35,20 @@ class BaseRabbitMQ:
         logger.error(f"Connection error: {error}")
         logger.error(f"Connection parameters: {self.url}")
 
-    async def create_queue(self, queue_name):
+    async def declare_exchange(self, exchange_name):
+        return await self.channel.declare_exchange(
+            exchange_name, aio_pika.ExchangeType.DIRECT, durable=True
+        )
+
+    async def create_queue(self, queue_name, exchange_name, routing_key):
+        await self.channel.set_qos(prefetch_count=1)
+
+        exchange = await self.declare_exchange(exchange_name)
+
         queue = await self.channel.declare_queue(queue_name, durable=True)
+        await queue.bind(exchange, routing_key)
+
+        return queue
 
     async def close_connection(self):
         await self.channel.close()

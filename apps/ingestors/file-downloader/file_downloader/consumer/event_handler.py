@@ -41,12 +41,12 @@ class EventHandler:
             raise ValueError("Invalid message body")
 
         message_data = parsed_body.get("data", {})
-        message_metadata = parsed_body.get("metadata", {})
+        # message_metadata = parsed_body.get("metadata", {})
 
         logger.info("Message body parsed successfully")
         return MessageParameters(
             data=message_data,
-            metadata=message_metadata
+            # metadata=message_metadata
         )
 
     @staticmethod
@@ -55,9 +55,9 @@ class EventHandler:
             logger.error("Invalid message: Missing input")
             raise ValueError("Invalid message: Missing input")
 
-        if not message_params.metadata:
-            logger.error("Invalid message: Missing metadata")
-            raise ValueError("Invalid message: Missing metadata")
+        # if not message_params.metadata:
+        #     logger.error("Invalid message: Missing metadata")
+        #     raise ValueError("Invalid message: Missing metadata")
         # Additional validation rules
         # ...
 

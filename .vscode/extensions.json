@@ -2,6 +2,8 @@
   "recommendations": [
     "nrwl.angular-console",
     "esbenp.prettier-vscode",
-    "golang.go"
+    "golang.go",
+    "dbaeumer.vscode-eslint",
+    "firsttris.vscode-jest-runner"
   ]
 }

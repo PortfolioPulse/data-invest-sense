@@ -37,6 +37,10 @@ func (s *WebServer) AddHandler(path string, method string, pattern string, handl
 	}
 }
 
+func (s *WebServer) HandleHealthz(handler http.HandlerFunc) {
+     s.Router.Get("/healthz", handler)
+}
+
 func (s *WebServer) Start() {
 	http.ListenAndServe(fmt.Sprintf(":%s", s.WebServerPort), s.Router)
 }

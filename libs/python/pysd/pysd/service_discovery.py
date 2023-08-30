@@ -13,6 +13,8 @@ class ServiceUnavailableError(Exception):
 @dataclass
 class ServiceVars:
     rabbitmq: str = "RABBITMQ"
+    lakeController: str = "LAKE_CONTROLLER"
+    minio: str = "MINIO"
 
 
 class ServiceDiscovery:
@@ -38,6 +40,23 @@ class ServiceDiscovery:
         service_name = self._service_vars.rabbitmq
         return self._get_endpoint("RABBITMQ_PORT_6572_TCP", service_name, protocol="amqp")
 
+    def lake_controller_endpoint(self):
+        service_name = self._service_vars.lakeController
+        endpoint = self._get_endpoint("LAKE_CONTROLLER_PORT_8000_TCP", service_name)
+        if "localhost" in endpoint:
+            endpoint = endpoint.replace("8000", "8002")
+        return endpoint
+
+    def minio_endpoint(self):
+        service_name = self._service_vars.minio
+        endpoint = self._get_endpoint("MINIO_PORT_9000_TCP", service_name)
+        return endpoint
+
+    def minio_access_key(self):
+        return os.getenv("MINIO_ACCESS_KEY")
+
+    def minio_secret_key(self):
+        return os.getenv("MINIO_SECRET_KEY")
 
 def new_from_env():
     return ServiceDiscovery(os.environ)

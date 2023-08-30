@@ -1,0 +1,66 @@
+{
+  "name": "nx-plugins-repo-settings",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/nx-plugins/repo-settings/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/nx-plugins/repo-settings",
+        "main": "libs/nx-plugins/repo-settings/src/index.ts",
+        "tsConfig": "libs/nx-plugins/repo-settings/tsconfig.lib.json",
+        "assets": [
+          "libs/nx-plugins/repo-settings/*.md",
+          {
+            "input": "./libs/nx-plugins/repo-settings/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-plugins/repo-settings/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-plugins/repo-settings",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/nx-plugins/repo-settings",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/nx-plugins/repo-settings/**/*.ts",
+          "libs/nx-plugins/repo-settings/package.json",
+          "libs/nx-plugins/repo-settings/executors.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/nx-plugins/repo-settings/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

@@ -35,6 +35,11 @@ func NewWebConfigHandler(client *mongo.Client, eventDispatcher events.EventDispa
 	return webConfigHandler
 }
 
+func NewHealthzHandler() *handlers.WebHealthzHandler {
+	webHealthzHandler := handlers.NewWebHealthzHandler()
+	return webHealthzHandler
+}
+
 // wire.go:
 
 var setConfigRepositoryDependency = wire.NewSet(database.NewConfigRepository, wire.Bind(

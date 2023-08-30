@@ -21,7 +21,6 @@ func NewConfigCreatedHandler(rabbitMQ *queue.RabbitMQ) *ConfigCreatedHandler {
 
 func (si *ConfigCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup, exchangeName string, routingKey string) {
 	defer wg.Done()
-	fmt.Printf("Config created: %v", event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
      err := si.RabbitMQ.Notify(
           jsonOutput,

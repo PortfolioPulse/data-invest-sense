@@ -50,7 +50,7 @@ func (ciu *CreateInputUseCase) Execute(input InputInputDTO, service string, sour
 		},
 	}
 	ciu.InputCreated.SetPayload(dto)
-	ciu.EventDispatcher.Dispatch(ciu.InputCreated, "inputs", fmt.Sprintf("%s.%s", dto.Metadata.Service, dto.Metadata.Source))
+	ciu.EventDispatcher.Dispatch(ciu.InputCreated, "services", fmt.Sprintf("%s.inputs.%s", dto.Metadata.Service, dto.Metadata.Source))
 
 	return dto, nil
 }

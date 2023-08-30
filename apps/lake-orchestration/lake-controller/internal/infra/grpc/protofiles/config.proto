@@ -16,7 +16,8 @@ message CreateConfigRequest {
   string source = 4;
   string context = 5;
   repeated DependsOn depends_on = 6;
-  map<string, google.protobuf.Any> jobParameters = 7;
+  map<string, google.protobuf.Any> serviceParameters = 7;
+  map<string, google.protobuf.Any> jobParameters = 8;
 }
 
 message CreateConfigResponse {
@@ -27,7 +28,10 @@ message CreateConfigResponse {
   string source = 5;
   string context = 6;
   repeated DependsOn depends_on = 7;
-  map<string, google.protobuf.Any> jobParameters = 8;
+  map<string, google.protobuf.Any> serviceParameters = 8;
+  map<string, google.protobuf.Any> jobParameters = 9;
+  string created_at = 10;
+  string updated_at = 11;
 }
 
 service ConfigService {

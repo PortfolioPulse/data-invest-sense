@@ -44,18 +44,21 @@ func (cr *ConfigRepository) getOneById(id string) (*entity.Config, error) {
 
 func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	// Check if the document already exists based on the ID
-	_, err := cr.getOneById(string(config.ID))
+	existingConfig, err := cr.getOneById(string(config.ID))
 	if err != nil {
 		// Insert new document
 		_, err := cr.Collection.InsertOne(context.Background(), bson.M{
-			"id":            config.ID,
-			"name":          config.Name,
-			"active":        config.Active,
-			"service":       config.Service,
-			"source":        config.Source,
-			"context":       config.Context,
-			"dependsOn":     config.DependsOn,
-			"jobParameters": config.JobParameters,
+			"id":                config.ID,
+			"name":              config.Name,
+			"active":            config.Active,
+			"service":           config.Service,
+			"source":            config.Source,
+			"context":           config.Context,
+			"dependsOn":         config.DependsOn,
+			"serviceParamaters": config.ServiceParamaters,
+			"jobParameters":     config.JobParameters,
+			"created_at":        config.CreatedAt,
+			"updated_at":        config.UpdatedAt,
 		})
 		if err != nil {
 			return err
@@ -64,13 +67,16 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	}
 	// Update existing document
 	_, err = cr.Collection.UpdateOne(context.Background(), bson.M{"id": config.ID}, bson.M{"$set": bson.M{
-		"name":          config.Name,
-		"active":        config.Active,
-		"service":       config.Service,
-		"source":        config.Source,
-		"context":       config.Context,
-		"dependsOn":     config.DependsOn,
-		"jobParameters": config.JobParameters,
+		"name":              config.Name,
+		"active":            config.Active,
+		"service":           config.Service,
+		"source":            config.Source,
+		"context":           config.Context,
+		"dependsOn":         config.DependsOn,
+		"serviceParamaters": config.ServiceParamaters,
+		"jobParameters":     config.JobParameters,
+		"created_at":        existingConfig.CreatedAt,
+		"updated_at":        config.UpdatedAt,
 	}})
 	if err != nil {
 		return err
@@ -78,10 +84,30 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	return nil
 }
 
+func (cr *ConfigRepository) FindAll() ([]*entity.Config, error) {
+	cursor, err := cr.Collection.Find(context.Background(), bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var results []*entity.Config
+	for cursor.Next(context.Background()) {
+		var result entity.Config
+		if err := cursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return results, nil
+}
 
 func (cr *ConfigRepository) FindAllByService(service string) ([]*entity.Config, error) {
-     filter := bson.M{"service": service}
-     cursor, err := cr.Collection.Find(context.Background(), filter)
+	filter := bson.M{"service": service}
+	cursor, err := cr.Collection.Find(context.Background(), filter)
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +128,9 @@ func (cr *ConfigRepository) FindAllByService(service string) ([]*entity.Config, 
 }
 
 func (cr *ConfigRepository) FindOneById(id string) (*entity.Config, error) {
-     result, err := cr.getOneById(id)
-     if err != nil {
-          return nil, err
-     }
-     return result, nil
+	result, err := cr.getOneById(id)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

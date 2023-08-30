@@ -3,24 +3,28 @@
 package model
 
 type Config struct {
-	ID        string             `json:"id"`
-	Name      string             `json:"name"`
-	Active    bool               `json:"active"`
-	Service   string             `json:"service"`
-	Source    string             `json:"source"`
-	Context   string             `json:"context"`
-	DependsOn []*JobDependencies `json:"dependsOn,omitempty"`
-	JobParams string             `json:"jobParams"`
+	ID                string             `json:"id"`
+	Name              string             `json:"name"`
+	Active            bool               `json:"active"`
+	Service           string             `json:"service"`
+	Source            string             `json:"source"`
+	Context           string             `json:"context"`
+	DependsOn         []*JobDependencies `json:"dependsOn,omitempty"`
+	ServiceParameters string             `json:"serviceParameters"`
+	JobParameters     string             `json:"jobParameters"`
+	CreatedAt         string             `json:"createdAt"`
+	UpdatedAt         string             `json:"updatedAt"`
 }
 
 type ConfigInput struct {
-	Name      string                  `json:"name"`
-	Active    bool                    `json:"active"`
-	Service   string                  `json:"service"`
-	Source    string                  `json:"source"`
-	Context   string                  `json:"context"`
-	DependsOn []*JobDependenciesInput `json:"dependsOn,omitempty"`
-	JobParams string                  `json:"jobParams"`
+	Name              string                  `json:"name"`
+	Active            bool                    `json:"active"`
+	Service           string                  `json:"service"`
+	Source            string                  `json:"source"`
+	Context           string                  `json:"context"`
+	DependsOn         []*JobDependenciesInput `json:"dependsOn,omitempty"`
+	ServiceParameters string                  `json:"serviceParameters"`
+	JobParameters     string                  `json:"jobParameters"`
 }
 
 type JobDependencies struct {
