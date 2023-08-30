@@ -1,0 +1,28 @@
+[tool.coverage.run]
+branch = true
+source = [ "pysd" ]
+
+[tool.coverage.report]
+exclude_lines = ['if TYPE_CHECKING:']
+show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-fail-under=90 --cov-report html:'../../../coverage/libs/python/pysd/html' --cov-report xml:'../../../coverage/libs/python/pysd/coverage.xml' --html='../../../reports/libs/python/pysd/unittests/html/index.html' --junitxml='../../../reports/libs/python/pysd/unittests/junit.xml'"
+
+[tool.poetry]
+name = "pysd"
+version = "1.0.0"
+description = "Service"
+authors = [ ]
+license = 'Proprietary'
+readme = 'README.md'
+
+  [[tool.poetry.packages]]
+  include = "pysd"
+
+  [tool.poetry.dependencies]
+  python = ">=3.9,<3.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

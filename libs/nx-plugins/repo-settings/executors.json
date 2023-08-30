@@ -1,0 +1,14 @@
+{
+  "executors": {
+    "minio-buckets": {
+      "implementation": "./src/executors/minio-buckets/executor",
+      "schema": "./src/executors/minio-buckets/schema.json",
+      "description": "minio-buckets executor"
+    },
+    "controller-configs": {
+      "implementation": "./src/executors/controller-configs/executor",
+      "schema": "./src/executors/controller-configs/schema.json",
+      "description": "controller-configs executor"
+    }
+  }
+}

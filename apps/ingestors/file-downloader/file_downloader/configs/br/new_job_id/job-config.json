@@ -1,0 +1,12 @@
+{
+  "id": "new_job_id",
+  "name": "new-job",
+  "active": true,
+  "shouldRun": true,
+  "jobHandler": "dummy",
+  "context": "br",
+  "outputType": "spark-treatment",
+  "jobParams": {
+    "url": "http://www.google.com"
+  }
+}

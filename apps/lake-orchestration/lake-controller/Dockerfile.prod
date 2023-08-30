@@ -1,0 +1,17 @@
+# FROM scratch
+# WORKDIR /app
+# COPY dist/server .
+# COPY .env .
+
+# CMD ["./server"]
+# Dockerfile for lake-controller
+FROM alpine:latest
+
+# Install curl
+RUN apk update && apk add curl
+
+WORKDIR /app
+COPY dist/server .
+COPY .env .
+
+CMD ["./server"]

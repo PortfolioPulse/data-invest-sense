@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "title": "MinioBuckets executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "bucketName": {
+      "type": "string",
+      "title": "Bucket name",
+      "description": "Name of the bucket to create"
+    }
+  },
+  "required": []
+}

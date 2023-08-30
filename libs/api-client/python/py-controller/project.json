@@ -1,0 +1,70 @@
+{
+  "name": "api-client-python-py-controller",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/api-client/python/py-controller/pycontroller",
+  "targets": {
+    "lock": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry lock --no-update",
+        "cwd": "libs/api-client/python/py-controller"
+      }
+    },
+    "add": {
+      "executor": "@nxlv/python:add",
+      "options": {}
+    },
+    "update": {
+      "executor": "@nxlv/python:update",
+      "options": {}
+    },
+    "remove": {
+      "executor": "@nxlv/python:remove",
+      "options": {}
+    },
+    "build": {
+      "executor": "@nxlv/python:build",
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "options": {
+        "outputPath": "libs/api-client/python/py-controller/dist",
+        "publish": false,
+        "lockedVersions": true,
+        "bundleLocalDependencies": true
+      }
+    },
+    "install": {
+      "executor": "@nxlv/python:install",
+      "options": {
+        "silent": false,
+        "args": "",
+        "cacheDir": ".cache/pypoetry",
+        "verbose": false,
+        "debug": false
+      }
+    },
+    "lint": {
+      "executor": "@nxlv/python:flake8",
+      "outputs": [
+        "{workspaceRoot}/reports/libs/api-client/python/py-controller/pylint.txt"
+      ],
+      "options": {
+        "outputFile": "reports/libs/api-client/python/py-controller/pylint.txt"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": [
+        "{workspaceRoot}/reports/libs/api-client/python/py-controller/unittests",
+        "{workspaceRoot}/coverage/libs/api-client/python/py-controller"
+      ],
+      "options": {
+        "command": "poetry run pytest tests/",
+        "cwd": "libs/api-client/python/py-controller"
+      }
+    }
+  },
+  "tags": []
+}

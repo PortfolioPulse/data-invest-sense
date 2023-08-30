@@ -1,0 +1,61 @@
+[tool.coverage.run]
+branch = true
+source = [ "file_downloader" ]
+
+[tool.coverage.report]
+exclude_lines = [ "if TYPE_CHECKING:" ]
+show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-fail-under=90 --cov-report html:'../../../coverage/apps/ingestors/file-downloader/html' --cov-report xml:'../../../coverage/apps/ingestors/file-downloader/coverage.xml' --html='../../../reports/apps/ingestors/file-downloader/unittests/html/index.html' --junitxml='../../../reports/apps/ingestors/file-downloader/unittests/junit.xml'"
+
+[tool.poetry]
+name = "file_downloader"
+version = "1.0.0"
+description = "File"
+authors = [ ]
+license = "Proprietary"
+readme = "README.md"
+
+  [[tool.poetry.packages]]
+  include = "file_downloader"
+
+  [tool.poetry.dependencies]
+  python = ">=3.9,<3.11"
+  requests = "^2.31.0"
+
+    [tool.poetry.dependencies.pyrepository]
+    path = "../../../libs/python/pyrepository"
+    develop = true
+
+    [tool.poetry.dependencies.pylog]
+    path = "../../../libs/python/pylog"
+    develop = true
+
+    [tool.poetry.dependencies.pydotenv]
+    path = "../../../libs/python/pydotenv"
+    develop = true
+
+    [tool.poetry.dependencies.core]
+    path = "../../../libs/python/core"
+    develop = true
+
+    [tool.poetry.dependencies.pyrabbitmq]
+    path = "../../../libs/python/pyrabbitmq"
+    develop = true
+
+    [tool.poetry.dependencies.pysd]
+    path = "../../../libs/python/pysd"
+    develop = true
+
+    [tool.poetry.dependencies.py-controller]
+    path = "../../../libs/api-client/python/py-controller"
+    develop = true
+
+    [tool.poetry.dependencies.py-minio]
+    path = "../../../libs/storage-client/python/py-minio"
+    develop = true
+
+[build-system]
+requires = [ "poetry-core" ]
+build-backend = "poetry.core.masonry.api"

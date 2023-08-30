@@ -1,0 +1,16 @@
+go 1.20
+
+use (
+	apps/apis/lake-manager
+	apps/lake-orchestration/lake-controller
+	apps/lake-orchestration/lake-events
+	apps/lake-orchestration/lake-gateway
+	apps/lake-orchestration/lake-repository
+	libs/golang/events
+	libs/golang/go-config
+	libs/golang/go-jwt
+	libs/golang/go-mongodb
+	libs/golang/go-rabbitmq
+	libs/golang/goid
+	libs/golang/service-discovery
+)

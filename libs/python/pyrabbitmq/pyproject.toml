@@ -1,0 +1,34 @@
+[tool.coverage.run]
+branch = true
+source = [ "pyrabbit" ]
+
+[tool.coverage.report]
+exclude_lines = [ "if TYPE_CHECKING:" ]
+show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-fail-under=90 --cov-report html:'../../../coverage/libs/python/pyrabbitmq/html' --cov-report xml:'../../../coverage/libs/python/pyrabbitmq/coverage.xml' --html='../../../reports/libs/python/pyrabbitmq/unittests/html/index.html' --junitxml='../../../reports/libs/python/pyrabbitmq/unittests/junit.xml'"
+
+[tool.poetry]
+name = "pyrabbitmq"
+version = "1.0.0"
+description = "RabbitMQ"
+authors = [ ]
+license = "Proprietary"
+readme = "README.md"
+
+  [[tool.poetry.packages]]
+  include = "pyrabbit"
+
+  [tool.poetry.dependencies]
+  python = ">=3.9,<3.11"
+  aio-pika = "^9.1.4"
+
+    [tool.poetry.dependencies.pylog]
+    path = "../pylog"
+    develop = true
+
+
+[build-system]
+requires = [ "poetry-core" ]
+build-backend = "poetry.core.masonry.api"

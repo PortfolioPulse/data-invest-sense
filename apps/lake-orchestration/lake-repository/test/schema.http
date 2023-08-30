@@ -1,0 +1,39 @@
+POST http://localhost:8003/schemas HTTP/1.1
+Content-Type: application/json
+
+{
+  "schema_type": "input-file-downloader-stocks",
+  "service": "file-downloader",
+  "source": "stocks",
+  "json_schema": {
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string"
+      },
+      "file": {
+        "type": "string"
+      },
+      "reference": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "url",
+      "file"
+    ]
+  }
+}
+
+###
+
+GET http://localhost:8003/schemas HTTP/1.1
+
+###
+
+GET http://localhost:8003/schemas/service/file-downloader HTTP/1.1
+
+###
+
+GET http://localhost:8003/schemas/input-file-downloader-stocks-file-downloader-stocks HTTP/1.1
+

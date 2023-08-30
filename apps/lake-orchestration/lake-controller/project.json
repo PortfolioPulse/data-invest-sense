@@ -1,0 +1,84 @@
+{
+  "name": "lake-orchestration-lake-controller",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/lake-orchestration/lake-controller",
+  "targets": {
+    "build": {
+      "executor": "@nx-go/nx-go:build",
+      "options": {
+        "outputPath": "dist/apps/lake-orchestration/lake-controller",
+        "main": "apps/lake-orchestration/lake-controller/cmd/server/cmd/server/main.go"
+      }
+    },
+    "serve": {
+      "executor": "@nx-go/nx-go:serve",
+      "options": {
+        "main": "apps/lake-orchestration/lake-controller/cmd/server/main.go"
+      }
+    },
+    "test": {
+      "executor": "@nx-go/nx-go:test"
+    },
+    "lint": {
+      "executor": "@nx-go/nx-go:lint"
+    },
+    "go-tidy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go mod tidy",
+        "cwd": "apps/lake-orchestration/lake-controller"
+      }
+    },
+    "protoc": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "protoc --go_out=. --go-grpc_out=. internal/infra/grpc/protofiles/config.proto",
+        "cwd": "apps/lake-orchestration/lake-controller"
+      }
+    },
+    "wire": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "wire",
+        "cwd": "apps/lake-orchestration/lake-controller/cmd/server"
+      }
+    },
+    "graphql-init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run github.com/99designs/gqlgen init",
+        "cwd": "apps/lake-orchestration/lake-controller"
+      }
+    },
+    "graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go run github.com/99designs/gqlgen generate",
+        "cwd": "apps/lake-orchestration/lake-controller"
+      }
+    },
+    "build-go": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags=\"-w -s\" -o dist/server ./cmd/server/main.go ./cmd/server/wire_gen.go",
+        "cwd": "apps/lake-orchestration/lake-controller"
+      }
+    },
+    "image": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "build-go"
+      ],
+      "options": {
+        "command": "docker build -t fabiocaffarello/lake-controller:latest -f ./Dockerfile.prod .",
+        "cwd": "apps/lake-orchestration/lake-controller"
+      }
+    },
+    "controller-configs": {
+        "executor": "@data-invest-sense/repo-settings:controller-configs",
+        "cwd": "apps/lake-orchestration/lake-controller"
+    },
+    "tags": ["scope:lake-orchestration", "lang:go"]
+  }
+}

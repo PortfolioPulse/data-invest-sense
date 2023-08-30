@@ -1,0 +1,32 @@
+syntax = "proto3";
+package pb;
+option go_package = "internal/infra/grpc/pb";
+
+import "google/protobuf/any.proto";
+
+message Metadata {
+  string processing_id = 1;
+  string processing_timestamp = 2;
+  string source = 3;
+  string service = 4;
+}
+
+message Status {
+  int32 code = 1;
+  string detail = 2;
+}
+
+message CreateInputRequest {
+  map<string, google.protobuf.Any> data = 2;
+}
+
+message CreateInputResponse {
+  string id = 1;
+  map<string, google.protobuf.Any> data = 2;
+  Metadata metadata = 3;
+  Status status = 4;
+}
+
+service InputService {
+  rpc CreateInput(CreateInputRequest) returns (CreateInputResponse);
+}

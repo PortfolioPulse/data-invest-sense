@@ -1,0 +1,131 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_VHOST: /
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - invest-sense-network
+
+  rockmongo:
+    image: mongo-express
+    container_name: rockmongo
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+    networks:
+      - invest-sense-network
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongodb:/data/db
+    networks:
+      - invest-sense-network
+
+  minio:
+    image: bitnami/minio
+    container_name: minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ACCESS_KEY: minio-access-key
+      MINIO_SECRET_KEY: minio-secret-key
+      MINIO_ROOT_USER: new-minio-root-user
+      MINIO_ROOT_PASSWORD: new-minio-root-password
+    volumes:
+      - ./data/minio:/data
+    networks:
+      - invest-sense-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
+      interval: 10s
+      timeout: 1s
+      retries: 4
+
+  lake-gateway:
+    image: fabiocaffarello/lake-gateway:latest
+    container_name: lake-gateway
+    ports:
+      - 8001:8000
+      - 50051:50051
+      - 4001:4000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
+  lake-controller:
+    image: fabiocaffarello/lake-controller:latest
+    container_name: lake-controller
+    ports:
+      - 8002:8000
+      - 50052:50051
+      - 4002:4000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://lake-controller:8000/healthz"]
+      interval: 10s
+      timeout: 1s
+      retries: 4
+    networks:
+      - invest-sense-network
+
+  lake-repository:
+    image: fabiocaffarello/lake-repository:latest
+    container_name: lake-repository
+    ports:
+      - 8003:8000
+      - 50053:50051
+      - 4003:4000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
+  ingestors-file-downloader:
+    image: ingestors-file-downloader:latest
+    container_name: ingestors-file-downloader
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      lake-controller:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
+networks:
+  invest-sense-network:
+    name: invest-sense-network
+    driver: bridge
+
+volumes:
+  minio_data:

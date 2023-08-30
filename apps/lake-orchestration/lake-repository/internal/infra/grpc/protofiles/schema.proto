@@ -1,0 +1,27 @@
+syntax = "proto3";
+package pb;
+option go_package = "internal/infra/grpc/pb";
+
+import "google/protobuf/any.proto";
+
+message CreateSchemaRequest {
+  string schemaType = 1;
+  string service = 2;
+  string source = 3;
+  map<string, google.protobuf.Any> jsonSchema = 4;
+}
+
+message CreateSchemaResponse {
+  string id = 1;
+  string schemaType = 2;
+  string service = 3;
+  string source = 4;
+  map<string, google.protobuf.Any> jsonSchema = 5;
+  string schemaId = 6;
+  string CreatedAt = 7;
+  string UpdatedAt = 8;
+}
+
+service SchemaService {
+  rpc CreateSchema(CreateSchemaRequest) returns (CreateSchemaResponse);
+}

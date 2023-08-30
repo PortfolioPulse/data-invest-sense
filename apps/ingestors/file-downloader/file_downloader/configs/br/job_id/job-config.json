@@ -1,0 +1,12 @@
+{
+  "id": "job_id",
+  "name": "job",
+  "active": true,
+  "shouldRun": true,
+  "jobHandler": "dummy",
+  "context": "br",
+  "outputType": "spark-treatment",
+  "jobParams": {
+    "url": "https://portaldatransparencia.gov.br/download-de-dados/cnep/{}"
+  }
+}
