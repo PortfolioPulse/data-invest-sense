@@ -12,4 +12,3 @@ class RabbitMQConsumer(BaseRabbitMQ):
     async def consume_queue(self, queue_name, callback):
         await self.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
         await self.channel.start_consuming()
-

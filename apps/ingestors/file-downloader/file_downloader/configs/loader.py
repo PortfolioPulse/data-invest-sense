@@ -1,33 +1,9 @@
-# FIXME: This is a temporary solution. We need to find a better way to load configs.
-import json
-from dataclasses import dataclass, field
-from pydotenv.dotenv import DotEnvLoader
-from pathlib import Path
-from typing import Dict, Any
-import asyncio
+from typing import Dict
 from pylog.log import setup_logging
+from pyrepository.interfaces.ingestors.dtos import Config, JobParams, JobMetadataParams
 from pycontroller.client import async_pycontroller_client
 
 logger = setup_logging(__name__)
-
-@dataclass
-class JobMetadataParams:
-    _id: str
-    name: str
-    context: str
-    source: str
-    service: str
-
-@dataclass
-class JobParams:
-    jobHandler: str
-    active: bool
-    url: str
-
-@dataclass
-class Config:
-    jobMetadataParams: JobMetadataParams
-    jobParams: JobParams
 
 
 class SetConfigParams:

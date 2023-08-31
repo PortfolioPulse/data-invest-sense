@@ -1,6 +1,6 @@
 import asyncio
 import json
-from pyrepository.interfaces.ingestors.dtos import Config, MessageParameters
+from pyrepository.interfaces.ingestors.dtos import Config, MessageParameters, MessageMetadata
 from pylog.log import setup_logging
 from functools import wraps
 
@@ -40,13 +40,20 @@ class EventHandler:
             logger.error(f"Failed to parse message body: {e}")
             raise ValueError("Invalid message body")
 
+        message_id = parsed_body.get("id", "")
         message_data = parsed_body.get("data", {})
-        # message_metadata = parsed_body.get("metadata", {})
+        message_metadata = parsed_body.get("metadata", {})
 
         logger.info("Message body parsed successfully")
         return MessageParameters(
+            id=message_id,
             data=message_data,
-            # metadata=message_metadata
+            metadata=MessageMetadata(
+                processing_id=message_metadata.get("processing_id", ""),
+                processing_timestamp=message_metadata.get("processing_timestamp", ""),
+                source=message_metadata.get("source", ""),
+                service=message_metadata.get("service", ""),
+            )
         )
 
     @staticmethod
@@ -55,10 +62,12 @@ class EventHandler:
             logger.error("Invalid message: Missing input")
             raise ValueError("Invalid message: Missing input")
 
-        # if not message_params.metadata:
-        #     logger.error("Invalid message: Missing metadata")
-        #     raise ValueError("Invalid message: Missing metadata")
-        # Additional validation rules
-        # ...
+        if not message_params.metadata:
+            logger.error("Invalid message: Missing metadata")
+            raise ValueError("Invalid message: Missing metadata")
+
+        if not message_params.id:
+            logger.error("Invalid message: Missing id")
+            raise ValueError("Invalid message: Missing id")
 
         logger.info("Message parameters validated successfully")

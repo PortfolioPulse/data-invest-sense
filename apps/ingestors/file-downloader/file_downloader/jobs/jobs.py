@@ -1,8 +1,10 @@
-# get meta data
 import importlib
-from configs.loader import Config
+from datetime import datetime
+
 from pylog.log import setup_logging
-import time
+from pyrepository.interfaces.ingestors.dtos import (
+    Config, MessageMetadataOriginsOutput, MessageMetadataOutput,
+    MetadataOutput)
 
 logger = setup_logging(__name__)
 
@@ -17,4 +19,29 @@ class JobHandler:
 
     def run(self, data):
         logger.info(f"[RUNNING JOB] - Handler: {self.config.jobParams.jobHandler}")
-        self.module.Job(self.config.jobParams).run(data)
+        job_data, job_status = self.module.Job(self.config.jobParams, self.config.jobMetadataParams).run(data)
+        return {
+            "data": job_data,
+            "metadata": self._get_metadata(data),
+            "status": job_status,
+        }
+
+    def _get_metadata(self, data):
+        return MetadataOutput(
+            input=MessageMetadataOutput(
+                id=data.id,
+                data=data.data,
+                processing_id=data.metadata.processing_id,
+                processing_timestamp=data.metadata.processing_timestamp,
+                source=MessageMetadataOriginsOutput(
+                    gateway=data.metadata.source,
+                    controller=self.config.jobMetadataParams.source,
+                )
+            ),
+            service=MessageMetadataOriginsOutput(
+                gateway=data.metadata.service,
+                controller=self.config.jobMetadataParams.service,
+            ),
+            processing_id=data.metadata.processing_id,
+            processing_timestamp=datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        )

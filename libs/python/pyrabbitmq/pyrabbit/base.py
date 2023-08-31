@@ -53,3 +53,17 @@ class BaseRabbitMQ:
     async def close_connection(self):
         await self.channel.close()
         await self.connection.close()
+
+    async def publish_message(self, exchange_name, routing_key, message):
+        try:
+            exchange = await self.declare_exchange(exchange_name)
+            await exchange.publish(
+                aio_pika.Message(
+                    body=message.encode(),
+                    delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                ),
+                routing_key=routing_key,
+            )
+            logger.info(f"Published message to exchange '{exchange_name}' with routing key '{routing_key}'")
+        except Exception as e:
+            logger.error(f"Error while publishing message: {e}")

@@ -22,6 +22,33 @@
     },
     "lint": {
       "executor": "@nx-go/nx-go:lint"
+    },
+    "go-tidy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go mod tidy",
+        "cwd": "apps/lake-orchestration/lake-events"
+      }
+    },
+    "build-go": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "go-tidy"
+      ],
+      "options": {
+        "command": "GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags=\"-w -s\" -o dist/server ./cmd/server/main.go",
+        "cwd": "apps/lake-orchestration/lake-events"
+      }
+    },
+    "image": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "build-go"
+      ],
+      "options": {
+        "command": "docker build -t fabiocaffarello/lake-events:latest -f ./Dockerfile.prod .",
+        "cwd": "apps/lake-orchestration/lake-events"
+      }
     }
   },
   "tags": [

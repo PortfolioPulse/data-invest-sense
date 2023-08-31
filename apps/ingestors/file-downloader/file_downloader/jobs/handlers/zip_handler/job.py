@@ -1,7 +1,7 @@
 from jobs.handlers.handlers import Handler
 from pylog.log import setup_logging
-from configs.loader import JobParams
-import time
+from configs.loader import JobParams, JobMetadataParams
+from pyrepository.interfaces.ingestors.dtos import MessageStatus
 from datetime import datetime
 from dataclasses import dataclass
 import requests
@@ -24,9 +24,10 @@ class JobInput:
 
 
 class Job(Handler):
-    def __init__(self, job_params: JobParams):
+    def __init__(self, job_params: JobParams, job_metadata_params: JobMetadataParams):
         self.job_params = job_params
-        super().__init__(job_params)
+        self.job_metadata_params = job_metadata_params
+        super().__init__(job_params, job_metadata_params)
 
     def _get_job_input(self, data):
         try:
@@ -45,6 +46,18 @@ class Job(Handler):
         reference = self._get_reference(input.reference)
         return self.job_params.url.format(reference)
 
+    def _get_bucket_name(self):
+        return "raw-{context}-source-{source}".format(
+            context=self.job_metadata_params.context,
+            source=self.job_metadata_params.source,
+        )
+
+    def _get_status(self, response):
+        return MessageStatus(
+            code=response.status_code,
+            detail=response.reason,
+        )
+
     def make_request(self, input: JobInput):
         endpoint = self._get_endpoint(input)
         logger.info(f"endpoint: {endpoint}")
@@ -56,5 +69,6 @@ class Job(Handler):
         response = self.make_request(input)
         minio = minio_client()
         logger.info(f"Job _get_endpoint: {response.status_code}")
-        uri = minio.upload_bytes("raw-br-source-cnep", "test-object", response.content)
+        uri = minio.upload_bytes(self._get_bucket_name(), "test-object", response.content)
         logger.info(f"File storage uri: {uri}")
+        return {"documentUri": uri}, self._get_status(response)

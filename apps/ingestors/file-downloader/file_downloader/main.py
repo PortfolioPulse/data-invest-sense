@@ -31,7 +31,7 @@ async def main():
                 asyncio.create_task(Event.consume_queue(config, rabbitmq_service, exchange_name, queue_name, routing_key, aio_queue))
             )
             tasks.append(
-                asyncio.create_task(Controller(config, aio_queue).consume())
+                asyncio.create_task(Controller(config, aio_queue, rabbitmq_service).consume())
             )
 
     await asyncio.gather(*tasks)

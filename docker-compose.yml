@@ -107,6 +107,17 @@ services:
     networks:
       - invest-sense-network
 
+  lake-events:
+    image: fabiocaffarello/lake-events:latest
+    container_name: lake-events
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      lake-controller:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
   ingestors-file-downloader:
     image: ingestors-file-downloader:latest
     container_name: ingestors-file-downloader
