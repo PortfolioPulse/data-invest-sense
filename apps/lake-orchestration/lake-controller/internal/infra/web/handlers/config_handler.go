@@ -90,19 +90,19 @@ func (h *WebConfigHandler) ListOneConfigById(w http.ResponseWriter, r *http.Requ
 }
 
 func (h *WebConfigHandler) ListAllConfigsByService(w http.ResponseWriter, r *http.Request) {
-     service := chi.URLParam(r, "service")
-     listAllConfigsByService := usecase.NewListAllConfigsByServiceUseCase(
-          h.ConfigRepository,
-     )
+	service := chi.URLParam(r, "service")
+	listAllConfigsByService := usecase.NewListAllConfigsByServiceUseCase(
+		h.ConfigRepository,
+	)
 
-     output, err := listAllConfigsByService.Execute(service)
-     if err != nil {
-          http.Error(w, err.Error(), http.StatusInternalServerError)
-          return
-     }
-     err = json.NewEncoder(w).Encode(output)
-     if err != nil {
-          http.Error(w, err.Error(), http.StatusInternalServerError)
-          return
-     }
+	output, err := listAllConfigsByService.Execute(service)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

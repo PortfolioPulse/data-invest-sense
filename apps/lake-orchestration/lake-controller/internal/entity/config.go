@@ -6,35 +6,58 @@ import (
 	"time"
 )
 
+var (
+	ErrConfigNameEmpty              = errors.New("config name is empty")
+	ErrConfigFrequencyEmpty         = errors.New("config frequency is empty")
+	ErrConfigServiceEmpty           = errors.New("config service is empty")
+	ErrConfigSourceEmpty            = errors.New("config source is empty")
+	ErrConfigContextEmpty           = errors.New("config context is empty")
+	ErrConfigDependsOnEmpty         = errors.New("config dependsOn is empty")
+	ErrConfigJobParametersEmpty     = errors.New("config jobParameters is empty")
+	ErrConfigServiceParametersEmpty = errors.New("config serviceParameters is empty")
+)
+
 type JobDependencies struct {
 	Service string `json:"service"`
 	Source  string `json:"source"`
 }
 
 type Config struct {
-	ID                config.ID              `json:"id"`
-	Name              string                 `json:"name"`
-	Active            bool                   `json:"active"`
-	Service           string                 `json:"service"`
-	Source            string                 `json:"source"`
-	Context           string                 `json:"context"`
-	DependsOn         []JobDependencies      `json:"dependsOn"`
-	ServiceParamaters map[string]interface{} `json:"serviceParamaters"`
-	JobParameters     map[string]interface{} `json:"jobParameters"`
-	CreatedAt         string                 `json:"createdAt"`
-	UpdatedAt         string                 `json:"updatedAt"`
+	ID                config.ID              `bson:"id"`
+	Name              string                 `bson:"name"`
+	Active            bool                   `bson:"active"`
+	Frequency         string                 `bson:"frequency"`
+	Service           string                 `bson:"service"`
+	Source            string                 `bson:"source"`
+	Context           string                 `bson:"context"`
+	DependsOn         []JobDependencies      `bson:"depends_on"`
+	ServiceParameters map[string]interface{} `bson:"service_parameters"`
+	JobParameters     map[string]interface{} `bson:"job_parameters"`
+	CreatedAt         string                 `bson:"created_at"`
+	UpdatedAt         string                 `bson:"updated_at"`
 }
 
-func NewConfig(name string, active bool, service string, source string, context string, dependsOn []JobDependencies, jobParameters map[string]interface{}, serviceParameters map[string]interface{}) (*Config, error) {
+func NewConfig(
+	name string,
+	active bool,
+	frequency string,
+	service string,
+	source string,
+	context string,
+	dependsOn []JobDependencies,
+	jobParameters map[string]interface{},
+	serviceParameters map[string]interface{},
+) (*Config, error) {
 	config := &Config{
 		ID:                config.NewID(service, source),
 		Name:              name,
 		Active:            active,
+		Frequency:         frequency,
 		Service:           service,
 		Source:            source,
 		Context:           context,
 		DependsOn:         dependsOn,
-		ServiceParamaters: serviceParameters,
+		ServiceParameters: serviceParameters,
 		JobParameters:     jobParameters,
 		CreatedAt:         time.Now().Format(time.RFC3339),
 		UpdatedAt:         time.Now().Format(time.RFC3339),
@@ -48,22 +71,25 @@ func NewConfig(name string, active bool, service string, source string, context 
 
 func (config *Config) IsConfigValid() error {
 	if config.Name == "" {
-		return errors.New("name is empty")
+		return ErrConfigNameEmpty
+	}
+	if config.Frequency == "" {
+		return ErrConfigFrequencyEmpty
 	}
 	if config.Service == "" {
-		return errors.New("service is empty")
+		return ErrConfigServiceEmpty
 	}
 	if config.Source == "" {
-		return errors.New("source is empty")
+		return ErrConfigSourceEmpty
 	}
 	if config.Context == "" {
-		return errors.New("context is empty")
+		return ErrConfigContextEmpty
 	}
 	if config.JobParameters == nil {
-		return errors.New("jobParameters is empty")
+		return ErrConfigJobParametersEmpty
 	}
-     if config.ServiceParamaters == nil {
-          return errors.New("serviceParamaters is empty")
-     }
+	if config.ServiceParameters == nil {
+		return ErrConfigServiceParametersEmpty
+	}
 	return nil
 }

@@ -10,15 +10,16 @@ class SetConfigParams:
 
     def set_job_params(self, configRaw):
         return JobParams(
-            jobHandler=configRaw["serviceParameters"]["jobHandler"],
-            active=configRaw["active"],
-            url=configRaw["jobParameters"]["url"],
+            jobHandler=configRaw["service_parameters"]["job_handler"],
+            url=configRaw["job_parameters"]["url"],
         )
 
     def set_job_metadata_params(self, configRaw):
         return JobMetadataParams(
             _id=configRaw["id"],
             name=configRaw["name"],
+            active=configRaw["active"],
+            frequency=configRaw["frequency"],
             context=configRaw["context"],
             source=configRaw["source"],
             service=configRaw["service"],

@@ -59,7 +59,7 @@ func (uiu *UpdateStatusInputUseCase) Execute(inputStatus InputStatusInputDTO, se
 		},
 	}
 	uiu.InputUpdated.SetPayload(dto)
-	uiu.EventDispatcher.Dispatch(uiu.InputUpdated, "inputs", fmt.Sprintf("%s.%s", dto.Metadata.Service, dto.Metadata.Source))
+	uiu.EventDispatcher.Dispatch(uiu.InputUpdated, "inputs", fmt.Sprintf("%s.status-updated.%s", dto.Metadata.Service, dto.Metadata.Source))
 
 	return dto, nil
 }

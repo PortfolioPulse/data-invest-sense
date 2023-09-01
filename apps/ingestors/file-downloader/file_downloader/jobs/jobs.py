@@ -44,4 +44,6 @@ class JobHandler:
             ),
             processing_id=data.metadata.processing_id,
             processing_timestamp=datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            target_endpoint=self.config.jobParams.url,
+            job_frequency=self.config.jobMetadataParams.frequency,
         )

@@ -55,12 +55,15 @@ func main() {
 
 	webInputHandler := NewWebInputHandler(client, eventDispatcher, configs.DBName)
 	webInputStatusHandler := NewWebInputStatusHandler(client, eventDispatcher, configs.DBName)
+     webStagingJobHandler := NewWebStagingJobHandler(client, eventDispatcher, configs.DBName)
 
 	webserver.AddHandler("/inputs", "POST", "/service/{service}/source/{source}", webInputHandler.CreateInput)
 	webserver.AddHandler("/inputs", "GET", "/service/{service}/source/{source}", webInputHandler.ListAllByServiceAndSource)
 	webserver.AddHandler("/inputs", "GET", "/service/{service}", webInputHandler.ListAllByService)
 	webserver.AddHandler("/inputs", "PUT", "/service/{service}/source/{source}/{id}", webInputStatusHandler.UpdateStatus)
 	webserver.AddHandler("/inputs", "GET", "/service/{service}/source/{source}/{id}", webInputHandler.ListOneByIdAndService)
+
+     webserver.AddHandler("/staging", "POST", "/staging-jobs", webStagingJobHandler.CreateStagingJob)
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()

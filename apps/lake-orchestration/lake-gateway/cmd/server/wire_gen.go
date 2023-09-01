@@ -34,6 +34,13 @@ func NewUpdateStatusInputUseCase(client *mongo.Client, eventDispatcher events.Ev
 	return updateStatusInputUseCase
 }
 
+func NewCreateStagingJobUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *usecase.CreateStagingJobUseCase {
+	stagingJobRepository := database.NewStagingJobRepository(client, database2)
+	stagingJobCreated := event.NewStagingJobCreated()
+	createStagingJobUseCase := usecase.NewCreateStagingJobUseCase(stagingJobRepository, stagingJobCreated, eventDispatcher)
+	return createStagingJobUseCase
+}
+
 func NewListAllByServiceAndSourceUseCase(client *mongo.Client, database2 string) *usecase.ListAllByServiceAndSourceUseCase {
 	inputRepository := database.NewInputRepository(client, database2)
 	listAllByServiceAndSourceUseCase := usecase.NewListAllByServiceAndSourceUseCase(inputRepository)
@@ -67,6 +74,13 @@ func NewWebInputHandler(client *mongo.Client, eventDispatcher events.EventDispat
 	return webInputHandler
 }
 
+func NewWebStagingJobHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *handlers.WebStagingJobHandler {
+	stagingJobRepository := database.NewStagingJobRepository(client, database2)
+	stagingJobCreated := event.NewStagingJobCreated()
+	webStagingJobHandler := handlers.NewWebStagingJobHandler(eventDispatcher, stagingJobRepository, stagingJobCreated)
+	return webStagingJobHandler
+}
+
 // wire.go:
 
 var setInputRepositoryDependency = wire.NewSet(database.NewInputRepository, wire.Bind(
@@ -75,8 +89,16 @@ var setInputRepositoryDependency = wire.NewSet(database.NewInputRepository, wire
 ),
 )
 
-var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewInputCreated, event.NewInputUpdated, wire.Bind(new(events.EventInterface), new(*event.InputCreated)), wire.Bind(new(events.EventInterface), new(*event.InputUpdated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
+var setStagingJobRepositoryDependency = wire.NewSet(database.NewStagingJobRepository, wire.Bind(
+	new(entity.StagingJobInterface),
+	new(*database.StagingJobRepository),
+),
+)
+
+var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewInputCreated, event.NewInputUpdated, event.NewStagingJobCreated, wire.Bind(new(events.EventInterface), new(*event.InputCreated)), wire.Bind(new(events.EventInterface), new(*event.InputUpdated)), wire.Bind(new(events.EventInterface), new(*event.StagingJobCreated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
 
 var setInputCreatedEvent = wire.NewSet(event.NewInputCreated, wire.Bind(new(events.EventInterface), new(*event.InputCreated)))
 
 var setInputUpdatedEvent = wire.NewSet(event.NewInputUpdated, wire.Bind(new(events.EventInterface), new(*event.InputUpdated)))
+
+var setStagingJobCreatedEvent = wire.NewSet(event.NewStagingJobCreated, wire.Bind(new(events.EventInterface), new(*event.StagingJobCreated)))

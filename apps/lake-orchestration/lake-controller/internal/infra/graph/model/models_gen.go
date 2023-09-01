@@ -6,6 +6,7 @@ type Config struct {
 	ID                string             `json:"id"`
 	Name              string             `json:"name"`
 	Active            bool               `json:"active"`
+	Frequency         string             `json:"frequency"`
 	Service           string             `json:"service"`
 	Source            string             `json:"source"`
 	Context           string             `json:"context"`
@@ -19,6 +20,7 @@ type Config struct {
 type ConfigInput struct {
 	Name              string                  `json:"name"`
 	Active            bool                    `json:"active"`
+	Frequency         string                  `json:"frequency"`
 	Service           string                  `json:"service"`
 	Source            string                  `json:"source"`
 	Context           string                  `json:"context"`

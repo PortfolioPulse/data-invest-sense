@@ -74,6 +74,7 @@ func (s *ConfigService) CreateConfig(ctx context.Context, in *pb.CreateConfigReq
 	dto := usecase.ConfigInputDTO{
 		Name:              in.Name,
 		Active:            in.Active,
+          Frequency:         in.Frequency,
 		Service:           in.Service,
 		Source:            in.Source,
 		Context:           in.Context,
@@ -89,6 +90,7 @@ func (s *ConfigService) CreateConfig(ctx context.Context, in *pb.CreateConfigReq
 	return &pb.CreateConfigResponse{
 		Id:                output.ID,
 		Active:            output.Active,
+          Frequency:         output.Frequency,
 		Service:           output.Service,
 		Source:            output.Source,
 		Context:           output.Context,

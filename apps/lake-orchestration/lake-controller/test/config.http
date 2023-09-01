@@ -4,13 +4,14 @@ Content-Type: application/json
 {
   "name": "cnep-config",
   "active": true,
+  "frequency": "daily",
   "service": "file-downloader",
   "source": "cnep",
   "context": "br",
-  "serviceParameters": {
-    "jobHandler": "zip_handler"
+  "service_parameters": {
+    "job_handler": "zip_handler"
   },
-  "jobParameters": {
+  "job_parameters": {
     "url": "https://portaldatransparencia.gov.br/download-de-dados/cnep/{}"
   }
 }
@@ -28,3 +29,4 @@ GET http://localhost:8002/configs/file-downloader-cnep HTTP/1.1
 GET http://localhost:8002/configs/service/file-downloader HTTP/1.1
 
 ###
+

@@ -5,6 +5,8 @@ from dataclasses import dataclass
 class JobMetadataParams:
     _id: str
     name: str
+    active: bool
+    frequency: str
     context: str
     source: str
     service: str
@@ -12,7 +14,6 @@ class JobMetadataParams:
 @dataclass
 class JobParams:
     jobHandler: str
-    active: bool
     url: str
 
 @dataclass
@@ -53,6 +54,8 @@ class MetadataOutput:
     service: MessageMetadataOriginsOutput
     processing_id: str
     processing_timestamp: str
+    target_endpoint: str
+    job_frequency: str
 
 @dataclass
 class MessageStatus:

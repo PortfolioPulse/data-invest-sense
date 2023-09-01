@@ -8,4 +8,14 @@ type InputInterface interface {
      FindAllByServiceAndSourceAndStatus(service string, source string, status int) ([]*Input, error)
 }
 
+type StagingJobInterface interface {
+     SaveStagingJob(stagingJob *StagingJob) error
+     FindOneById(id string) (*StagingJob, error)
+     DeleteById(id string) error
+     FindAll() ([]*StagingJob, error)
+     FindAllByService(service string) ([]*StagingJob, error)
+     FindAllByServiceAndSource(service string, source string) ([]*StagingJob, error)
+     FindAllByInputId(inputId string) ([]*StagingJob, error)
+     FindAllByProcessingId(processingId string) ([]*StagingJob, error)
+}
 

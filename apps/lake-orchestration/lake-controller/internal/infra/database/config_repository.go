@@ -48,17 +48,18 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	if err != nil {
 		// Insert new document
 		_, err := cr.Collection.InsertOne(context.Background(), bson.M{
-			"id":                config.ID,
-			"name":              config.Name,
-			"active":            config.Active,
-			"service":           config.Service,
-			"source":            config.Source,
-			"context":           config.Context,
-			"dependsOn":         config.DependsOn,
-			"serviceParamaters": config.ServiceParamaters,
-			"jobParameters":     config.JobParameters,
-			"created_at":        config.CreatedAt,
-			"updated_at":        config.UpdatedAt,
+			"id":                 config.ID,
+			"name":               config.Name,
+			"active":             config.Active,
+			"frequency":          config.Frequency,
+			"service":            config.Service,
+			"source":             config.Source,
+			"context":            config.Context,
+			"depends_on":         config.DependsOn,
+			"service_parameters": config.ServiceParameters,
+			"job_parameters":     config.JobParameters,
+			"created_at":         config.CreatedAt,
+			"updated_at":         config.UpdatedAt,
 		})
 		if err != nil {
 			return err
@@ -67,16 +68,17 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	}
 	// Update existing document
 	_, err = cr.Collection.UpdateOne(context.Background(), bson.M{"id": config.ID}, bson.M{"$set": bson.M{
-		"name":              config.Name,
-		"active":            config.Active,
-		"service":           config.Service,
-		"source":            config.Source,
-		"context":           config.Context,
-		"dependsOn":         config.DependsOn,
-		"serviceParamaters": config.ServiceParamaters,
-		"jobParameters":     config.JobParameters,
-		"created_at":        existingConfig.CreatedAt,
-		"updated_at":        config.UpdatedAt,
+		"name":               config.Name,
+		"active":             config.Active,
+		"frequency":          config.Frequency,
+		"service":            config.Service,
+		"source":             config.Source,
+		"context":            config.Context,
+		"depends_on":         config.DependsOn,
+		"service_parameters": config.ServiceParameters,
+		"job_parameters":     config.JobParameters,
+		"created_at":         existingConfig.CreatedAt,
+		"updated_at":         config.UpdatedAt,
 	}})
 	if err != nil {
 		return err

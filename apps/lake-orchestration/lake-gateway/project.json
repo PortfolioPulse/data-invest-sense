@@ -67,6 +67,12 @@
     },
     "build-go": {
       "executor": "nx:run-commands",
+      "dependsOn": [
+        "go-tidy",
+        "graphql",
+        "protoc",
+        "wire"
+      ],
       "options": {
         "command": "GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags=\"-w -s\" -o dist/server ./cmd/server/main.go ./cmd/server/wire_gen.go",
         "cwd": "apps/lake-orchestration/lake-gateway"

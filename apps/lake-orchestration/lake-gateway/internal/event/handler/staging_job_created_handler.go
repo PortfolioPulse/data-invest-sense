@@ -9,18 +9,19 @@ import (
 	"libs/golang/go-rabbitmq/queue"
 )
 
-type ConfigCreatedHandler struct {
+type StagingJobCreatedHandler struct {
 	RabbitMQ *queue.RabbitMQ
 }
 
-func NewConfigCreatedHandler(rabbitMQ *queue.RabbitMQ) *ConfigCreatedHandler {
-	return &ConfigCreatedHandler{
+func NewStagingJobCreatedHandler(rabbitMQ *queue.RabbitMQ) *StagingJobCreatedHandler {
+	return &StagingJobCreatedHandler{
 		RabbitMQ: rabbitMQ,
 	}
 }
 
-func (si *ConfigCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup, exchangeName string, routingKey string) {
+func (si *StagingJobCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup, exchangeName string, routingKey string) {
 	defer wg.Done()
+	fmt.Printf("StagingJob created: %v", event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
 	err := si.RabbitMQ.Notify(
 		jsonOutput,
