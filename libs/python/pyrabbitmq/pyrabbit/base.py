@@ -37,7 +37,7 @@ class BaseRabbitMQ:
 
     async def declare_exchange(self, exchange_name):
         return await self.channel.declare_exchange(
-            exchange_name, aio_pika.ExchangeType.DIRECT, durable=True
+            exchange_name, aio_pika.ExchangeType.TOPIC, durable=True
         )
 
     async def create_queue(self, queue_name, exchange_name, routing_key):

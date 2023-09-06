@@ -36,9 +36,14 @@ func NewUpdateStatusInputUseCase(client *mongo.Client, eventDispatcher events.Ev
 
 func NewCreateStagingJobUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *usecase.CreateStagingJobUseCase {
 	stagingJobRepository := database.NewStagingJobRepository(client, database2)
-	stagingJobCreated := event.NewStagingJobCreated()
-	createStagingJobUseCase := usecase.NewCreateStagingJobUseCase(stagingJobRepository, stagingJobCreated, eventDispatcher)
+	createStagingJobUseCase := usecase.NewCreateStagingJobUseCase(stagingJobRepository)
 	return createStagingJobUseCase
+}
+
+func NewRemoveStagingJobUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *usecase.RemoveStagingJobUseCase {
+	stagingJobRepository := database.NewStagingJobRepository(client, database2)
+	removeStagingJobUseCase := usecase.NewRemoveStagingJobUseCase(stagingJobRepository)
+	return removeStagingJobUseCase
 }
 
 func NewListAllByServiceAndSourceUseCase(client *mongo.Client, database2 string) *usecase.ListAllByServiceAndSourceUseCase {
@@ -59,6 +64,12 @@ func NewListOneByIdAndServiceUseCase(client *mongo.Client, database2 string) *us
 	return listOneByIdAndServiceUseCase
 }
 
+func NewListOneStagingJobUsingServiceSourceIdUseCase(client *mongo.Client, database2 string) *usecase.ListOneStagingJobUsingServiceSourceIdUseCase {
+	stagingJobRepository := database.NewStagingJobRepository(client, database2)
+	listOneStagingJobUsingServiceSourceIdUseCase := usecase.NewListOneStagingJobUsingServiceSourceIdUseCase(stagingJobRepository)
+	return listOneStagingJobUsingServiceSourceIdUseCase
+}
+
 // [Web Handler]
 func NewWebInputStatusHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *handlers.WebInputStatusHandler {
 	inputRepository := database.NewInputRepository(client, database2)
@@ -74,10 +85,9 @@ func NewWebInputHandler(client *mongo.Client, eventDispatcher events.EventDispat
 	return webInputHandler
 }
 
-func NewWebStagingJobHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database2 string) *handlers.WebStagingJobHandler {
+func NewWebStagingJobHandler(client *mongo.Client, database2 string) *handlers.WebStagingJobHandler {
 	stagingJobRepository := database.NewStagingJobRepository(client, database2)
-	stagingJobCreated := event.NewStagingJobCreated()
-	webStagingJobHandler := handlers.NewWebStagingJobHandler(eventDispatcher, stagingJobRepository, stagingJobCreated)
+	webStagingJobHandler := handlers.NewWebStagingJobHandler(stagingJobRepository)
 	return webStagingJobHandler
 }
 
@@ -95,10 +105,8 @@ var setStagingJobRepositoryDependency = wire.NewSet(database.NewStagingJobReposi
 ),
 )
 
-var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewInputCreated, event.NewInputUpdated, event.NewStagingJobCreated, wire.Bind(new(events.EventInterface), new(*event.InputCreated)), wire.Bind(new(events.EventInterface), new(*event.InputUpdated)), wire.Bind(new(events.EventInterface), new(*event.StagingJobCreated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
+var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewInputCreated, event.NewInputUpdated, wire.Bind(new(events.EventInterface), new(*event.InputCreated)), wire.Bind(new(events.EventInterface), new(*event.InputUpdated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
 
 var setInputCreatedEvent = wire.NewSet(event.NewInputCreated, wire.Bind(new(events.EventInterface), new(*event.InputCreated)))
 
 var setInputUpdatedEvent = wire.NewSet(event.NewInputUpdated, wire.Bind(new(events.EventInterface), new(*event.InputUpdated)))
-
-var setStagingJobCreatedEvent = wire.NewSet(event.NewStagingJobCreated, wire.Bind(new(events.EventInterface), new(*event.StagingJobCreated)))

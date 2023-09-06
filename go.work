@@ -6,6 +6,13 @@ use (
 	apps/lake-orchestration/lake-events
 	apps/lake-orchestration/lake-gateway
 	apps/lake-orchestration/lake-repository
+	libs/api-client/golang/go-controller
+	libs/api-client/golang/go-gateway
+	libs/api-client/golang/go-repository
+	libs/dtos/golang/dto-controller
+	libs/dtos/golang/dto-events
+	libs/dtos/golang/dto-gateway
+	libs/dtos/golang/dto-repository
 	libs/golang/events
 	libs/golang/go-config
 	libs/golang/go-jwt

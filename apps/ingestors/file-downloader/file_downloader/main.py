@@ -16,8 +16,7 @@ async def main():
     sd = new_from_env()
     configs = await fetch_configs()
 
-    rabbitmq_service = RabbitMQConsumer(url=sd.rabbitmq_endpoint())
-    await rabbitmq_service.connect()
+
 
     for _context, context_configs in configs.items():
         for config_name, config in context_configs.items():
@@ -26,6 +25,10 @@ async def main():
             queue_name = f"{_context}.{config.jobMetadataParams.service}.inputs.{config.jobMetadataParams.source}"
             exchange_name = "services"
             routing_key = f"{config.jobMetadataParams.service}.inputs.{config.jobMetadataParams.source}"
+
+            rabbitmq_service = RabbitMQConsumer(url=sd.rabbitmq_endpoint())
+            await rabbitmq_service.connect()
+            
             aio_queue = asyncio.Queue()
             tasks.append(
                 asyncio.create_task(Event.consume_queue(config, rabbitmq_service, exchange_name, queue_name, routing_key, aio_queue))

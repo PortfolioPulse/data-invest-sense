@@ -27,18 +27,18 @@ type Input struct {
 }
 
 type InputStatus struct {
-     ID     md5.ID `bson:"id"`
-     Status Status `bson:"status"`
+	ID     md5.ID `bson:"id"`
+	Status Status `bson:"status"`
 }
 
 func NewInputStatus(id string, status int, detail string) (*InputStatus, error) {
 	inputStatus := &InputStatus{
-          ID: md5.ID(id),
-          Status: Status{
-               Code: status,
-               Detail: detail,
-          },
-     }
+		ID: md5.ID(id),
+		Status: Status{
+			Code:   status,
+			Detail: detail,
+		},
+	}
 	err := inputStatus.IsStatusValid()
 	if err != nil {
 		return nil, err
@@ -82,13 +82,11 @@ func (i *Input) IsValid() error {
 }
 
 func (is *InputStatus) IsStatusValid() error {
-     if is.ID == "" {
-          return errors.New("id is required")
-     }
+	if is.ID == "" {
+		return errors.New("id is required")
+	}
 	if is.Status.Code == 0 && is.Status.Detail == "" {
 		return errors.New("status code is required")
 	}
 	return nil
 }
-
-

@@ -35,10 +35,8 @@ var setEventDispatcherDependency = wire.NewSet(
 	events.NewEventDispatcher,
 	event.NewInputCreated,
 	event.NewInputUpdated,
-     event.NewStagingJobCreated,
 	wire.Bind(new(events.EventInterface), new(*event.InputCreated)),
 	wire.Bind(new(events.EventInterface), new(*event.InputUpdated)),
-     wire.Bind(new(events.EventInterface), new(*event.StagingJobCreated)),
 	wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)),
 )
 
@@ -50,11 +48,6 @@ var setInputCreatedEvent = wire.NewSet(
 var setInputUpdatedEvent = wire.NewSet(
 	event.NewInputUpdated,
 	wire.Bind(new(events.EventInterface), new(*event.InputUpdated)),
-)
-
-var setStagingJobCreatedEvent = wire.NewSet(
-     event.NewStagingJobCreated,
-     wire.Bind(new(events.EventInterface), new(*event.StagingJobCreated)),
 )
 
 // [Use Case]
@@ -79,10 +72,17 @@ func NewUpdateStatusInputUseCase(client *mongo.Client, eventDispatcher events.Ev
 func NewCreateStagingJobUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *usecase.CreateStagingJobUseCase {
      wire.Build(
           setStagingJobRepositoryDependency,
-          setStagingJobCreatedEvent,
           usecase.NewCreateStagingJobUseCase,
      )
      return &usecase.CreateStagingJobUseCase{}
+}
+
+func NewRemoveStagingJobUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *usecase.RemoveStagingJobUseCase {
+     wire.Build(
+          setStagingJobRepositoryDependency,
+          usecase.NewRemoveStagingJobUseCase,
+     )
+     return &usecase.RemoveStagingJobUseCase{}
 }
 
 func NewListAllByServiceAndSourceUseCase(client *mongo.Client, database string) *usecase.ListAllByServiceAndSourceUseCase {
@@ -109,6 +109,14 @@ func NewListOneByIdAndServiceUseCase(client *mongo.Client, database string) *use
 	return &usecase.ListOneByIdAndServiceUseCase{}
 }
 
+func NewListOneStagingJobUsingServiceSourceIdUseCase(client *mongo.Client, database string) *usecase.ListOneStagingJobUsingServiceSourceIdUseCase {
+	wire.Build(
+		setStagingJobRepositoryDependency,
+		usecase.NewListOneStagingJobUsingServiceSourceIdUseCase,
+	)
+	return &usecase.ListOneStagingJobUsingServiceSourceIdUseCase{}
+}
+
 // [Web Handler]
 func NewWebInputStatusHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *webHandler.WebInputStatusHandler {
 	wire.Build(
@@ -128,11 +136,11 @@ func NewWebInputHandler(client *mongo.Client, eventDispatcher events.EventDispat
 	return &webHandler.WebInputHandler{}
 }
 
-func NewWebStagingJobHandler(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *webHandler.WebStagingJobHandler {
+func NewWebStagingJobHandler(client *mongo.Client, database string) *webHandler.WebStagingJobHandler {
      wire.Build(
           setStagingJobRepositoryDependency,
-          setStagingJobCreatedEvent,
           webHandler.NewWebStagingJobHandler,
      )
      return &webHandler.WebStagingJobHandler{}
 }
+// TODO

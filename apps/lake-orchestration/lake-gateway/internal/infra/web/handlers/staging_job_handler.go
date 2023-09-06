@@ -4,25 +4,20 @@ import (
 	"apps/lake-orchestration/lake-gateway/internal/entity"
 	"apps/lake-orchestration/lake-gateway/internal/usecase"
 	"encoding/json"
-	"libs/golang/events"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type WebStagingJobHandler struct {
-	EventDispatcher        events.EventDispatcherInterface
-	StagingJobRepository   entity.StagingJobInterface
-	StagingJobCreatedEvent events.EventInterface
+	StagingJobRepository entity.StagingJobInterface
 }
 
 func NewWebStagingJobHandler(
-	EventDispatcher events.EventDispatcherInterface,
 	StagingJobRepository entity.StagingJobInterface,
-	StagingJobCreatedEvent events.EventInterface,
 ) *WebStagingJobHandler {
 	return &WebStagingJobHandler{
-		EventDispatcher:        EventDispatcher,
-		StagingJobRepository:   StagingJobRepository,
-		StagingJobCreatedEvent: StagingJobCreatedEvent,
+		StagingJobRepository: StagingJobRepository,
 	}
 }
 
@@ -36,8 +31,6 @@ func (h *WebStagingJobHandler) CreateStagingJob(w http.ResponseWriter, r *http.R
 
 	createStagingJob := usecase.NewCreateStagingJobUseCase(
 		h.StagingJobRepository,
-		h.StagingJobCreatedEvent,
-		h.EventDispatcher,
 	)
 
 	output, err := createStagingJob.Execute(dto)
@@ -51,4 +44,49 @@ func (h *WebStagingJobHandler) CreateStagingJob(w http.ResponseWriter, r *http.R
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func (h *WebStagingJobHandler) RemoveStagingJob(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	dto := usecase.StagingJobInputIDDTO{
+		ID: id,
+	}
+	removeStagingJob := usecase.NewRemoveStagingJobUseCase(
+		h.StagingJobRepository,
+	)
+
+	output, err := removeStagingJob.Execute(dto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *WebStagingJobHandler) ListOneStagingJobUsingServiceSourceId(w http.ResponseWriter, r *http.Request) {
+     service := chi.URLParam(r, "service")
+     source := chi.URLParam(r, "source")
+     id := chi.URLParam(r, "id")
+
+     listStagingJobs := usecase.NewListOneStagingJobUsingServiceSourceIdUseCase(
+          h.StagingJobRepository,
+     )
+
+     output, err := listStagingJobs.Execute(service, source, id)
+     if err != nil {
+          http.Error(w, err.Error(), http.StatusInternalServerError)
+          return
+     }
+
+     err = json.NewEncoder(w).Encode(output)
+     if err != nil {
+          http.Error(w, err.Error(), http.StatusInternalServerError)
+          return
+     }
 }

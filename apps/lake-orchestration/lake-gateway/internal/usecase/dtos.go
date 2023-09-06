@@ -48,3 +48,7 @@ type StagingJobOutputDTO struct {
 	Service      string                 `json:"service"`
 	ProcessingId string                 `json:"processing_id"`
 }
+
+type StagingJobInputIDDTO struct {
+     ID string `json:"id"`
+}

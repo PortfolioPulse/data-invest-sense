@@ -17,5 +17,6 @@ type StagingJobInterface interface {
      FindAllByServiceAndSource(service string, source string) ([]*StagingJob, error)
      FindAllByInputId(inputId string) ([]*StagingJob, error)
      FindAllByProcessingId(processingId string) ([]*StagingJob, error)
+     FindOneStagingJobUsingServiceSourceAndId(service string, source string, inputId string) (*StagingJob, error)
 }
 

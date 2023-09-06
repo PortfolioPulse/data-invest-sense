@@ -1,74 +1,72 @@
 package main
 
 import (
-	"context"
+	"apps/lake-orchestration/lake-events/internal/infra/consumer"
+	"apps/lake-orchestration/lake-events/internal/infra/consumer/listener"
 	"libs/golang/go-config/configs"
-	mongoClient "libs/golang/go-mongodb/client"
-	"libs/golang/go-rabbitmq/queue"
-     amqp "github.com/rabbitmq/amqp091-go"
-	"time"
 )
+
+// Project structure:
+// .
+// ├── Dockerfile.prod
+// ├── cmd
+// │   └── server
+// │       └── main.go
+// ├── go.mod
+// ├── go.sum
+// ├── internal
+// │   ├── infra
+// │   │   └── consumer
+// │   │       ├── consumer.go
+// │   │       └── listener
+// │   │           ├── listener.go
+// │   │           ├── services_feedback_listener.go
+// │   │           |   ├── status_2XX_handler method
+// |   │           |   |    - Will apply use cases:
+// |   │           │   |       - update_status_input.go (Handle)
+// |   │           │   |       - remove_staging_job.go (Handle)
+// │   │           |   ├── status_4XX_handler method
+// |   │           |   |    - Will apply use cases:
+// |   │           │   |       - update_status_input.go (Handle)
+// |   │           │   |       - remove_staging_job.go (Handle)
+// |   │           │   |       - reprocess_input.go (Handle)
+// │   │           |   └── status_5XX_handler method
+// |   │           |        - Will apply use cases:
+// |   │           │            - update_status_input.go (Handle)
+// |   │           │            - remove_staging_job.go (Handle)
+// |   │           │            - reprocess_input.go (Handle)
+// │   │           └── services_input_listener.go
+// |   │               └── status_1_handler method
+// |   │                    - Will apply use cases:
+// |   │                        - create_staging_job.go (Handle)
+// |   │                        - update_status_input.go (Handle)
+// │   └── usecase
+// │       ├── create_staging_job.go
+// │       ├── remove_staging_job.go
+// │       ├── reprocess_input.go
+// │       └── update_status_input.go
+// └── project.json
 
 func main() {
 	configs, err := configs.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
 
-	// Connect to MongoDB with retries
-	mongoDB := getMongoDBClient(configs, ctx)
-	client := mongoDB.Client
-	defer client.Disconnect(ctx)
+     feedbackConsumerTag := "lake-events-feedback"
+     inputConsumerTag := "lake-events-input"
 
-	// Connect to RabbitMQ with retries
-	rabbitMQ := getRabbitMQChannel(configs)
-	// defer rabbitMQ.Close()
+	feedBackConsumer := consumer.NewConsumer(configs, feedbackConsumerTag)
+     inputConsumer := consumer.NewConsumer(configs, inputConsumerTag)
+	serviceFeedbackListener := listener.NewServiceFeedbackListener()
+	inputListener := listener.NewServiceInputListener()
 
-     msgsChannel := make(chan amqp.Delivery)
-     go rabbitMQ.Consume(msgsChannel, configs.RabbitMQExchange, "feedback")
-     for msg := range msgsChannel {
-           println(string(msg.Body))
-           msg.Ack(false)
-     }
+	feedBackConsumer.Register("feedback", "*.feedback.*", serviceFeedbackListener)
+	inputConsumer.Register("input_process_flag_queue", "*.inputs.*", inputListener)
+
+	inputConsumer.RunConsumers()
+     feedBackConsumer.RunConsumers()
+
+	// select {}
 }
 
-func getMongoDBClient(configs configs.Config, ctx context.Context) *mongoClient.MongoDB {
-	mongoDB := mongoClient.NewMongoDB(
-		configs.DBDriver,
-		configs.DBUser,
-		configs.DBPassword,
-		configs.DBHost,
-		configs.DBPort,
-		configs.DBName,
-		ctx,
-	)
-
-	_, err := mongoDB.Connect()
-	if err != nil {
-		panic(err)
-	}
-
-	return mongoDB
-}
-
-func getRabbitMQChannel(config configs.Config) *queue.RabbitMQ {
-	rabbitMQ := queue.NewRabbitMQ(
-		config.RabbitMQUser,
-		config.RabbitMQPassword,
-		config.RabbitMQHost,
-		config.RabbitMQPort,
-		config.RabbitMQVhost,
-		config.RabbitMQConsumerQueueName,
-		config.RabbitMQConsumerName,
-		config.RabbitMQDlxName,
-		config.RabbitMQProtocol,
-	)
-	_, err := rabbitMQ.Connect()
-	if err != nil {
-		panic(err)
-	}
-	rabbitMQ.DeclareExchange(config.RabbitMQExchange, config.RabbitMQExchangeType)
-	return rabbitMQ
-}

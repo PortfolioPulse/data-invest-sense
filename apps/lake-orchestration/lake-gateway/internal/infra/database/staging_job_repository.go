@@ -198,4 +198,19 @@ func (sjr *StagingJobRepository) FindAllByProcessingId(processingId string) ([]*
 	return results, nil
 }
 
+func (sjr *StagingJobRepository) FindOneStagingJobUsingServiceSourceAndId(service string, source string, inputId string) (*entity.StagingJob, error) {
+     collection := sjr.Client.Database(sjr.Database).Collection(sjr.Collection)
 
+     filter := bson.M{"service": service, "source": source, "input_id": inputId}
+     existingDoc := collection.FindOne(context.Background(), filter)
+     // Check if the document does not exist
+     if existingDoc.Err() != nil {
+          return nil, existingDoc.Err()
+     }
+
+     var result entity.StagingJob
+     if err := existingDoc.Decode(&result); err != nil {
+          return nil, err
+     }
+     return &result, nil
+}
