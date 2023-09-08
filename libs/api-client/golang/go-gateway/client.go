@@ -123,9 +123,9 @@ func (c *Client) ListOneInputByIdAndService(id, service, source string) (outputD
      return output, nil
 }
 
-func (c *Client) UpdateInputStatus(inputStatus inputDTO.InputStatusDTO, service string, source string) (outputDTO.InputDTO, error) {
+func (c *Client) UpdateInputStatus(inputStatus inputDTO.InputStatusDTO, service string, source string, id string) (outputDTO.InputDTO, error) {
      // id := inputStatus.ID
-	url := fmt.Sprintf("%s/service/%s/source/%s", baseURL, service, source)
+	url := fmt.Sprintf("%s/service/%s/source/%s/%s", baseURL, service, source, id)
 	req, err := c.createRequest(http.MethodPost, url, inputStatus)
      if err != nil {
           return outputDTO.InputDTO{}, fmt.Errorf("failed to create HTTP request: %w", err)
@@ -170,7 +170,7 @@ func (c *Client) RemoveStagingJob(id string) (outputDTO.StagingJobDTO, error) {
 }
 
 func (c *Client) ListOneStagingJobUsingServiceSourceInputId(service, source, inputId string) (outputDTO.StagingJobDTO, error) {
-     url := fmt.Sprintf("%s/staging-jobs/service/%s/source/%s/id/%s", baseURL, service, source, inputId)
+     url := fmt.Sprintf("%s/staging-jobs/service/%s/source/%s/%s", baseURL, service, source, inputId)
      req, err := c.createRequest(http.MethodGet, url, nil)
      if err != nil {
           return outputDTO.StagingJobDTO{}, fmt.Errorf("failed to create HTTP request: %w", err)

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 
 from controller.events.event import EventObserver
 from controller.events.listeners.kafka_listener import KafkaEventListener
@@ -31,12 +32,14 @@ class Controller:
             logger.info(f"Received message from queue '{self.__config.jobMetadataParams.context}.{self.__config.jobMetadataParams._id}': {message}")
             observer = EventObserver(self.__config)
             MongoDBEventListener(observer)
-            KafkaEventListener(observer)
+            # KafkaEventListener(observer)
             await observer.post_event("check_config", self.__config)
             for listener_handler, result in observer.results.items():
                 logger.info(f"listener_handler: {listener_handler}")
-                logger.info(f"result: {result}")
+                # logger.info(f"result: {result}")
             job_data = JobHandler(self.__config).run(message)
+            # await asyncio.sleep(5)
+            time.sleep(5)
             await self.__rabbitmq_service.publish_message(
                 "services",
                 "feedback",

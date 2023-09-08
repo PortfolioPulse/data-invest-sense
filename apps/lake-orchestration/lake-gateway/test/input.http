@@ -1,5 +1,5 @@
 
-POST http://localhost:8001/service/file-downloader/source/cnep HTTP/1.1
+POST http://localhost:8001/service/file-downloader/source/ceaf HTTP/1.1
 Content-Type: application/json
 
 {
@@ -37,7 +37,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8001/staging-jobs/service/file-downloader/source/cnep/645d86b6b9c92f96c7698bfbf6e8e8b5 HTTP/1.1
+GET http://localhost:8001/staging-jobs/service/file-downloader/source/cnep/da157ea561e6245d300476ff89fb0b94 HTTP/1.1
 
 ###
 

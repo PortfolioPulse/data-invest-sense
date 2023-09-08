@@ -11,53 +11,63 @@ import (
 )
 
 type Consumer struct {
-	rabbitMQ  *queue.RabbitMQ
-	consumers []ConsumerConfig
+	RabbitMQ  *queue.RabbitMQ
+	Consumers []ConsumerConfig
 	Exchange  string
 }
 
 type ConsumerConfig struct {
-	Queue      string
-	RoutingKey string
-	Listener   listener.MessageHandlerInterface
+	Queue           string
+	RoutingKey      string
+	Listener        listener.MessageHandlerInterface
+	ConsumerTag     string
+	ConsumerChannel chan amqp.Delivery
 }
 
-func NewConsumer(config configs.Config, consumerTag string) *Consumer {
-	rabbitMQ := getRabbitMQChannel(config, consumerTag)
+func NewConsumer(config configs.Config) *Consumer {
+	rabbitMQ := getRabbitMQChannel(config)
 	return &Consumer{
-		rabbitMQ: rabbitMQ,
+		RabbitMQ: rabbitMQ,
 		Exchange: config.RabbitMQExchange,
 	}
 }
 
-func (c *Consumer) Register(queue, routingKey string, listenerHandler listener.MessageHandlerInterface) {
-	c.consumers = append(c.consumers, ConsumerConfig{
-		Queue:      queue,
-		RoutingKey: routingKey,
-		Listener:   listenerHandler,
+func (c *Consumer) Register(queueName, routingKey string, listenerHandler listener.MessageHandlerInterface) {
+	consumerTag := fmt.Sprintf("%s:%s", "lake-events", queueName)
+	consumerChannel := make(chan amqp.Delivery)
+	c.Consumers = append(c.Consumers, ConsumerConfig{
+		Queue:           queueName,
+		RoutingKey:      routingKey,
+		Listener:        listenerHandler,
+		ConsumerTag:     consumerTag,
+		ConsumerChannel: consumerChannel,
 	})
 }
 
 func (c *Consumer) RunConsumers() {
-	msgsChannel := make(chan amqp.Delivery)
-
-	for _, consumer := range c.consumers {
-		go c.rabbitMQ.Consume(msgsChannel, c.Exchange, consumer.RoutingKey)
+	// Start all consumers
+	for _, consumerConfig := range c.Consumers {
+		go func(config ConsumerConfig) {
+			c.RabbitMQ.Consume(config.ConsumerChannel, c.Exchange, config.RoutingKey, config.Queue, config.ConsumerTag)
+			c.consumeMessages(config)
+		}(consumerConfig)
 	}
+	select {}
+}
 
-	for msg := range msgsChannel {
-		for _, consumer := range c.consumers {
-			log.Printf("Received a message: %s", msg.Body)
-			err := consumer.Listener.Handle(msg)
-			if err != nil {
-				fmt.Println(err)
-			}
+func (c *Consumer) consumeMessages(config ConsumerConfig) {
+	for msg := range config.ConsumerChannel {
+		log.Printf("Received a message: %s", msg.Body)
+		err := config.Listener.Handle(msg)
+		if err != nil {
+			log.Printf("Error handling message: %s", err)
+		} else {
+			msg.Ack(false)
 		}
-		msg.Ack(false)
 	}
 }
 
-func getRabbitMQChannel(config configs.Config, consumerTag string) *queue.RabbitMQ {
+func getRabbitMQChannel(config configs.Config) *queue.RabbitMQ {
 	rabbitMQ := queue.NewRabbitMQ(
 		config.RabbitMQUser,
 		config.RabbitMQPassword,
@@ -69,7 +79,6 @@ func getRabbitMQChannel(config configs.Config, consumerTag string) *queue.Rabbit
 		config.RabbitMQDlxName,
 		config.RabbitMQProtocol,
 	)
-	rabbitMQ.ConsumerName = consumerTag
 	_, err := rabbitMQ.Connect()
 	if err != nil {
 		panic(err)

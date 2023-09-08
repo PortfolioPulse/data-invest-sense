@@ -1,5 +1,6 @@
 """RabbitMQ Consumer Module."""
 from pylog.log import setup_logging
+import aio_pika
 from pyrabbit.base import BaseRabbitMQ
 
 logger = setup_logging(__name__)
@@ -9,6 +10,8 @@ class RabbitMQConsumer(BaseRabbitMQ):
     def __init__(self, url):
         super().__init__(url)
 
-    async def consume_queue(self, queue_name, callback):
-        await self.channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=False)
-        await self.channel.start_consuming()
+    async def listen(self, queue, callback):
+        async with queue.iterator() as queue_iter:
+            message: aio_pika.AbstractIncomingMessage
+            async for message in queue_iter:
+                await callback(message)

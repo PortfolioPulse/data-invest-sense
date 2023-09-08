@@ -46,19 +46,21 @@ func (l *ServiceInputListener) Handle(msg amqp.Delivery) error {
 	createStagingJobUseCase := usecase.NewCreateStagingJobUseCase()
 	updateInputUseCase := usecase.NewUpdateStatusInputUseCase()
 
-	stagingJob, err := createStagingJobUseCase.Execute(stagingJobDTO)
+	_, err = createStagingJobUseCase.Execute(stagingJobDTO)
+	// stagingJob, err := createStagingJobUseCase.Execute(stagingJobDTO)
 	if err != nil {
 		return err
 	}
 
-	log.Println(stagingJob)
+	// log.Println(stagingJob)
 
-	statusInput, err := updateInputUseCase.Execute(statusInputDTO, service, source)
+	_, err = updateInputUseCase.Execute(statusInputDTO, service, source)
+	// statusInput, err := updateInputUseCase.Execute(statusInputDTO, service, source)
 	if err != nil {
 		return err
 	}
 
-	log.Println(statusInput)
+	// log.Println(statusInput)
 
 	return nil
 }
