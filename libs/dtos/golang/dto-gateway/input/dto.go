@@ -21,7 +21,6 @@ type StagingJobDTO struct {
 	ProcessingId string                 `json:"processing_id"`
 }
 
-// TODO
 type StagingJobIDDTO struct {
 	ID string `json:"id"`
 }

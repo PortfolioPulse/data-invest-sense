@@ -3,9 +3,11 @@ package listener
 import (
 	"encoding/json"
 	"errors"
-	"log"
+	"fmt"
 
 	"apps/lake-orchestration/lake-events/internal/usecase"
+	controllerInputDTO "libs/dtos/golang/dto-controller/input"
+	controllerSharedDTO "libs/dtos/golang/dto-controller/shared"
 	gatewayInputDTO "libs/dtos/golang/dto-gateway/input"
 	gatewayOutputDTO "libs/dtos/golang/dto-gateway/output"
 	gatewaySharedDTO "libs/dtos/golang/dto-gateway/shared"
@@ -33,7 +35,6 @@ func (l *ServiceInputListener) Handle(msg amqp.Delivery) error {
 	source := serviceInputDTO.Metadata.Source
 	service := serviceInputDTO.Metadata.Service
 	statusInputDTO := setStatusFlagToProcessing(serviceInputDTO.ID)
-	log.Println(statusInputDTO)
 
 	stagingJobDTO := gatewayInputDTO.StagingJobDTO{
 		InputId:      serviceInputDTO.ID,
@@ -45,22 +46,45 @@ func (l *ServiceInputListener) Handle(msg amqp.Delivery) error {
 
 	createStagingJobUseCase := usecase.NewCreateStagingJobUseCase()
 	updateInputUseCase := usecase.NewUpdateStatusInputUseCase()
+	findAllDependentJobUseCase := usecase.NewListAllConfigsByDependentJobUseCase()
+	createProcessingJobDependenciesUseCase := usecase.NewCreateProcessingJobDependenciesUseCase()
 
 	_, err = createStagingJobUseCase.Execute(stagingJobDTO)
-	// stagingJob, err := createStagingJobUseCase.Execute(stagingJobDTO)
 	if err != nil {
 		return err
 	}
-
-	// log.Println(stagingJob)
 
 	_, err = updateInputUseCase.Execute(statusInputDTO, service, source)
-	// statusInput, err := updateInputUseCase.Execute(statusInputDTO, service, source)
 	if err != nil {
 		return err
 	}
 
-	// log.Println(statusInput)
+	dependentJobs, err := findAllDependentJobUseCase.Execute(service, source)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for _, dependentJob := range dependentJobs {
+		jobDeps := make([]controllerSharedDTO.ProcessingJobDependencies, len(dependentJob.DependsOn))
+		for i, dep := range dependentJob.DependsOn {
+			jobDeps[i] = controllerSharedDTO.ProcessingJobDependencies{
+				Service: dep.Service,
+				Source:  dep.Source,
+			}
+		}
+
+		processingJobDependency := controllerInputDTO.ProcessingJobDependenciesDTO{
+			Service:         dependentJob.Service,
+			Source:          dependentJob.Source,
+			JobDependencies: jobDeps,
+		}
+
+		_, err = createProcessingJobDependenciesUseCase.Execute(processingJobDependency)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+	}
 
 	return nil
 }

@@ -133,6 +133,52 @@ services:
     networks:
       - invest-sense-network
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    depends_on:
+      - cadvisor
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - invest-sense-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    container_name: grafana
+    depends_on:
+      - prometheus
+    networks:
+      - invest-sense-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    user: root
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - invest-sense-network
+    # depends_on:
+    # - redis
+
+  # redis:
+  #   image: redis:latest
+  #   container_name: redis
+  #   ports:
+  #   - 6379:6379
+
 networks:
   invest-sense-network:
     name: invest-sense-network

@@ -6,21 +6,26 @@ import (
 	"libs/golang/go-config/configs"
 )
 
+const (
+     feedbackQueueName = "service-feedback"
+     inputQueueName = "input-process"
+
+     inputRountingKey = "*.inputs.*"
+     feedbackRoutingKey = "feedback"
+)
+
 func main() {
 	configs, err := configs.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
 
-	feedbackQueueName := "service-feedback"
-	inputQueueName := "input-process"
-
 	consumers := consumer.NewConsumer(configs)
 	serviceFeedbackListener := listener.NewServiceFeedbackListener()
 	inputListener := listener.NewServiceInputListener()
 
-	consumers.Register(inputQueueName, "*.inputs.*", inputListener)
-	consumers.Register(feedbackQueueName, "feedback", serviceFeedbackListener)
+	consumers.Register(inputQueueName, inputRountingKey, inputListener)
+	consumers.Register(feedbackQueueName, feedbackRoutingKey, serviceFeedbackListener)
 
 	consumers.RunConsumers()
 

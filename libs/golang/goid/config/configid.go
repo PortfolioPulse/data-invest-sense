@@ -5,5 +5,5 @@ import "fmt"
 type ID = string
 
 func NewID(service string, source string) ID {
-     return ID(fmt.Sprintf("%s-%s", service, source))
+     return ID(fmt.Sprintf("config-%s-%s", service, source))
 }

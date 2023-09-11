@@ -33,6 +33,7 @@ func (suite *GoidUuidSuite) TestParseID() {
 	parsedID, err := ParseID(validUUIDString)
 	assert.NoError(suite.T(), err, "ParseID(%s) returned an unexpected error", validUUIDString)
 	assert.Equal(suite.T(), ID(expectedID), parsedID, "ParseID(%s) returned an incorrect ID", validUUIDString)
+     assert.Equal(suite.T(), validUUIDString, parsedID.String(), "ParseID(%s) returned an incorrect ID", validUUIDString)
 
 	// Invalid UUID string
 	invalidUUIDString := "invalid-uuid"

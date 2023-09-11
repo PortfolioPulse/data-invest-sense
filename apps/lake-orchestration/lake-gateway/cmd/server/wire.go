@@ -60,6 +60,15 @@ func NewCreateInputUseCase(client *mongo.Client, eventDispatcher events.EventDis
 	return &usecase.CreateInputUseCase{}
 }
 
+// func NewCreateInputWithProcessingIdUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *usecase.CreateInputWithProcessingIdUseCase {
+//      wire.Build(
+//           setInputRepositoryDependency,
+//           setInputCreatedEvent,
+//           usecase.NewCreateInputWithProcessingIdUseCase,
+//      )
+//      return &usecase.CreateInputWithProcessingIdUseCase{}
+// }
+
 func NewUpdateStatusInputUseCase(client *mongo.Client, eventDispatcher events.EventDispatcherInterface, database string) *usecase.UpdateStatusInputUseCase {
 	wire.Build(
 		setInputRepositoryDependency,

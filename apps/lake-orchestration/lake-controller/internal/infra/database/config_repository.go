@@ -136,3 +136,36 @@ func (cr *ConfigRepository) FindOneById(id string) (*entity.Config, error) {
 	}
 	return result, nil
 }
+
+func (cr *ConfigRepository) FindAllByDependentJod(service string, source string) ([]*entity.Config, error) {
+	filter := bson.M{
+		"depends_on": bson.M{
+			"$elemMatch": bson.M{
+				"service": service,
+				"source":  source,
+			},
+		},
+	}
+	cursor, err := cr.Collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(context.Background())
+
+	var results []*entity.Config
+
+	for cursor.Next(context.Background()) {
+		var result entity.Config
+		if err := cursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}

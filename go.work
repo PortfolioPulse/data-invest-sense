@@ -2,6 +2,7 @@ go 1.20
 
 use (
 	apps/apis/lake-manager
+	apps/ingestors/file-unzipper
 	apps/lake-orchestration/lake-controller
 	apps/lake-orchestration/lake-events
 	apps/lake-orchestration/lake-gateway
@@ -15,9 +16,11 @@ use (
 	libs/dtos/golang/dto-repository
 	libs/golang/events
 	libs/golang/go-config
+	libs/golang/go-json-schema
 	libs/golang/go-jwt
 	libs/golang/go-mongodb
 	libs/golang/go-rabbitmq
+	libs/golang/go-request
 	libs/golang/goid
 	libs/golang/service-discovery
 )

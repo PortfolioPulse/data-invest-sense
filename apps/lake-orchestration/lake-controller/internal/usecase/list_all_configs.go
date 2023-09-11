@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"apps/lake-orchestration/lake-controller/internal/entity"
+	outputDTO "libs/dtos/golang/dto-controller/output"
 )
 
 type ListAllConfigsUseCase struct {
@@ -16,14 +17,14 @@ func NewListAllConfigsUseCase(
 	}
 }
 
-func (la *ListAllConfigsUseCase) Execute() ([]ConfigOutputDTO, error) {
+func (la *ListAllConfigsUseCase) Execute() ([]outputDTO.ConfigDTO, error) {
 	items, err := la.ConfigRepository.FindAll()
 	if err != nil {
-		return []ConfigOutputDTO{}, err
+		return []outputDTO.ConfigDTO{}, err
 	}
-	var result []ConfigOutputDTO
+	var result []outputDTO.ConfigDTO
 	for _, item := range items {
-		dto := ConfigOutputDTO{
+		dto := outputDTO.ConfigDTO{
 			ID:                string(item.ID),
 			Name:              item.Name,
 			Active:            item.Active,

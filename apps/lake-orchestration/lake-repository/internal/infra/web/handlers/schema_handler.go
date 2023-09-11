@@ -6,6 +6,7 @@ import (
 
 	"apps/lake-orchestration/lake-repository/internal/entity"
 	"apps/lake-orchestration/lake-repository/internal/usecase"
+	inputDTO "libs/dtos/golang/dto-repository/input"
 	"libs/golang/events"
 
 	"github.com/go-chi/chi/v5"
@@ -30,7 +31,7 @@ func NewWebSchemaHandler(
 }
 
 func (h *WebSchemaHandler) CreateSchema(w http.ResponseWriter, r *http.Request) {
-	var dto usecase.SchemaInputDTO
+	var dto inputDTO.SchemaDTO
 	err := json.NewDecoder(r.Body).Decode(&dto)
 
 	if err != nil {

@@ -4,6 +4,8 @@ import (
 	"apps/lake-orchestration/lake-repository/internal/entity"
 	"fmt"
 
+	inputDTO "libs/dtos/golang/dto-repository/input"
+	outputDTO "libs/dtos/golang/dto-repository/output"
 	"libs/golang/events"
 )
 
@@ -25,18 +27,18 @@ func NewCreateSchemaUseCase(
 	}
 }
 
-func (csu *CreateSchemaUseCase) Execute(schema SchemaInputDTO) (SchemaOutputDTO, error) {
+func (csu *CreateSchemaUseCase) Execute(schema inputDTO.SchemaDTO) (outputDTO.SchemaDTO, error) {
 	schemaEntity, err := entity.NewSchema(schema.SchemaType, schema.Service, schema.Source, schema.JsonSchema)
 	if err != nil {
-		return SchemaOutputDTO{}, err
+		return outputDTO.SchemaDTO{}, err
 	}
 
 	err = csu.SchemaRepository.SaveSchema(schemaEntity)
 	if err != nil {
-		return SchemaOutputDTO{}, err
+		return outputDTO.SchemaDTO{}, err
 	}
 
-	dto := SchemaOutputDTO{
+	dto := outputDTO.SchemaDTO{
 		ID:         string(schemaEntity.ID),
 		SchemaType: schemaEntity.SchemaType,
 		Service:    schemaEntity.Service,

@@ -52,12 +52,12 @@ func main() {
 
 	// Web
 	webserver := webserver.NewWebServer(configs.WebServerPort)
-
 	webInputHandler := NewWebInputHandler(client, eventDispatcher, configs.DBName)
 	webInputStatusHandler := NewWebInputStatusHandler(client, eventDispatcher, configs.DBName)
      webStagingJobHandler := NewWebStagingJobHandler(client, configs.DBName)
 
 	webserver.AddHandler("/inputs", "POST", "/service/{service}/source/{source}", webInputHandler.CreateInput)
+     // webserver.AddHandler("/inputs", "POST", "/service/{service}/source/{source}/processing-id/{processingId}", webInputHandler.CreateInputWithProcessingId)
 	webserver.AddHandler("/inputs", "GET", "/service/{service}/source/{source}", webInputHandler.ListAllByServiceAndSource)
 	webserver.AddHandler("/inputs", "GET", "/service/{service}", webInputHandler.ListAllByService)
 	webserver.AddHandler("/inputs", "POST", "/service/{service}/source/{source}/{id}", webInputStatusHandler.UpdateStatus)

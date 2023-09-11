@@ -9,38 +9,6 @@ from configs.loader import fetch_configs
 logger = setup_logging(__name__, log_level="DEBUG")
 
 
-# async def main():
-#     logger.info("Starting File Downloader Service")
-#     loop = asyncio.get_event_loop()
-#     tasks = list()
-#     sd = new_from_env()
-#     configs = await fetch_configs()
-
-
-#     rabbitmq_service = RabbitMQConsumer(url=sd.rabbitmq_endpoint())
-#     await rabbitmq_service.connect()
-
-#     for _context, context_configs in configs.items():
-#         for config_name, config in context_configs.items():
-#             # logger.info(f"Job Config: {config}")
-#             # logger.info(f"Job Config Name: {config_name}")
-#             queue_name = f"{_context}.{config.jobMetadataParams.service}.inputs.{config.jobMetadataParams.source}"
-#             exchange_name = "services"
-#             routing_key = f"{config.jobMetadataParams.service}.inputs.{config.jobMetadataParams.source}"
-
-#             aio_queue = asyncio.Queue()
-#             tasks.append(
-#                 asyncio.ensure_future(Event.consume_queue(config, rabbitmq_service, exchange_name, queue_name, routing_key, aio_queue))
-#             )
-#             tasks.append(
-#                 asyncio.ensure_future(Controller(config, aio_queue, rabbitmq_service).consume())
-#             )
-
-#     await asyncio.gather(*tasks)
-
-#     await rabbitmq_service.close_connection()
-
-
 async def consume_messages(sd, configs):
     rabbitmq_service = RabbitMQConsumer(url=sd.rabbitmq_endpoint())
     await rabbitmq_service.connect()
