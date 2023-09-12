@@ -49,8 +49,8 @@ services:
       - 9000:9000
       - 9001:9001
     environment:
-      MINIO_ACCESS_KEY: minio-access-key
-      MINIO_SECRET_KEY: minio-secret-key
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
       MINIO_ROOT_USER: new-minio-root-user
       MINIO_ROOT_PASSWORD: new-minio-root-password
     volumes:
@@ -90,7 +90,7 @@ services:
       test: ["CMD", "curl", "-f", "http://lake-controller:8000/healthz"]
       interval: 10s
       timeout: 1s
-      retries: 4
+      retries: 5
     networks:
       - invest-sense-network
 
@@ -154,15 +154,15 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./.docker/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - invest-sense-network
 
   grafana:
     image: grafana/grafana
+    container_name: grafana
     ports:
       - "3000:3000"
-    container_name: grafana
     depends_on:
       - prometheus
     networks:
@@ -181,14 +181,47 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - invest-sense-network
-    # depends_on:
-    # - redis
 
-  # redis:
-  #   image: redis:latest
-  #   container_name: redis
-  #   ports:
-  #   - 6379:6379
+  trino:
+    hostname: trino
+    container_name: trino
+    image: 'trinodb/trino:351'
+    ports:
+      - '8085:8080'
+    volumes:
+      - ./.docker/trino/etc:/usr/lib/trino/etc:ro
+    networks:
+      - invest-sense-network
+
+  mariadb:
+    hostname: mariadb
+    image: mariadb:10.5.8
+    container_name: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: metastore_db
+    networks:
+      - invest-sense-network
+
+  hive-metastore:
+    hostname: hive-metastore
+    image: 'bitsondatadev/hive-metastore:latest'
+    container_name: hive-metastore
+    ports:
+      - '9083:9083' # Metastore Thrift
+    volumes:
+      - ./.docker/hive/conf/metastore-site.xml:/opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml:ro
+    environment:
+      METASTORE_DB_HOSTNAME: mariadb
+    depends_on:
+      - mariadb
+    networks:
+      - invest-sense-network
+
 
 networks:
   invest-sense-network:

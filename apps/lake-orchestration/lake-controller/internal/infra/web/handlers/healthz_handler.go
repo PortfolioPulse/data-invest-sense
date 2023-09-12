@@ -18,7 +18,7 @@ func NewWebHealthzHandler() *WebHealthzHandler {
 
 func (h *WebHealthzHandler) Healthz(w http.ResponseWriter, r *http.Request) {
 	duration := time.Since(h.startedAt)
-	if duration.Seconds() < 30 {
+	if duration.Seconds() < 35 {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("Healthz check failed after %v seconds", duration.Seconds())))
 	} else {
