@@ -52,6 +52,10 @@ readme = "README.md"
     path = "libs/api-client/python/py-youtube"
     develop = true
 
+    [tool.poetry.dependencies.spark-batch]
+    path = "apps/transformers/spark-batch"
+    develop = true
+
 [tool.poetry.group.dev.dependencies]
 flake8 = "6.0.0"
 autopep8 = "2.0.2"

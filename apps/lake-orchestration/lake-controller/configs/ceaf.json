@@ -1,13 +1,14 @@
 {
   "name": "ceaf-config",
   "active": true,
+  "frequency": "daily",
   "service": "file-downloader",
   "source": "ceaf",
   "context": "br",
-  "serviceParameters": {
-    "jobHandler": "zip_handler"
+  "service_parameters": {
+    "job_handler": "zip_handler"
   },
-  "jobParameters": {
+  "job_parameters": {
     "url": "https://portaldatransparencia.gov.br/download-de-dados/ceaf/{}"
   }
 }

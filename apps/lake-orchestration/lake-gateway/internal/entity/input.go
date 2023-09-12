@@ -15,30 +15,30 @@ type Metadata struct {
 }
 
 type Status struct {
-	Code   int    `json:"code"`
-	Detail string `json:"detail"`
+	Code   int    `bson:"code"`
+	Detail string `bson:"detail"`
 }
 
 type Input struct {
-	ID       md5.ID                 `json:"id"`
-	Data     map[string]interface{} `json:"data"`
-	Metadata Metadata               `json:"metadata"`
-	Status   Status                 `json:"status"`
+	ID       md5.ID                 `bson:"id"`
+	Data     map[string]interface{} `bson:"data"`
+	Metadata Metadata               `bson:"metadata"`
+	Status   Status                 `bson:"status"`
 }
 
 type InputStatus struct {
-     ID     md5.ID `json:"id"`
-     Status Status `json:"status"`
+	ID     md5.ID `bson:"id"`
+	Status Status `bson:"status"`
 }
 
 func NewInputStatus(id string, status int, detail string) (*InputStatus, error) {
 	inputStatus := &InputStatus{
-          ID: md5.ID(id),
-          Status: Status{
-               Code: status,
-               Detail: detail,
-          },
-     }
+		ID: md5.ID(id),
+		Status: Status{
+			Code:   status,
+			Detail: detail,
+		},
+	}
 	err := inputStatus.IsStatusValid()
 	if err != nil {
 		return nil, err
@@ -82,13 +82,11 @@ func (i *Input) IsValid() error {
 }
 
 func (is *InputStatus) IsStatusValid() error {
-     if is.ID == "" {
-          return errors.New("id is required")
-     }
+	if is.ID == "" {
+		return errors.New("id is required")
+	}
 	if is.Status.Code == 0 && is.Status.Detail == "" {
 		return errors.New("status code is required")
 	}
 	return nil
 }
-
-

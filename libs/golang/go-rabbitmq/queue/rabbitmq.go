@@ -1,11 +1,12 @@
 package queue
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
 
-	"github.com/streadway/amqp"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type RabbitMQ struct {
@@ -104,15 +105,21 @@ func (r *RabbitMQ) DeclareExchange(exchangeName, exchangeType string) {
 	r.ExchangeDeclared = true
 }
 
-func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, exchangeName, bindingKey string) {
+func (r *RabbitMQ) Consume(
+	messageChannel chan amqp.Delivery,
+	exchangeName string,
+	bindingKey string,
+	queueName string,
+	consumerName string,
+) {
 
 	q, err := r.Channel.QueueDeclare(
-		r.ConsumerQueueName, // name
-		true,                // durable
-		false,               // delete when usused
-		false,               // exclusive
-		false,               // no-wait
-		r.Args,              // arguments
+		queueName, // name
+		true,      // durable
+		false,     // delete when usused
+		false,     // exclusive
+		false,     // no-wait
+		r.Args,    // arguments
 	)
 	failOnError(err, "failed to declare a queue")
 
@@ -126,13 +133,13 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, exchangeName, bind
 	failOnError(err, "failed to bind queue to exchange")
 
 	incomingMessage, err := r.Channel.Consume(
-		q.Name,         // queue
-		r.ConsumerName, // consumer
-		r.AutoAck,      // auto-ack
-		false,          // exclusive
-		false,          // no-local
-		false,          // no-wait
-		nil,            // args
+		q.Name,       // queue
+		consumerName, // consumer
+		r.AutoAck,    // auto-ack
+		false,        // exclusive
+		false,        // no-local
+		false,        // no-wait
+		nil,          // args
 	)
 	failOnError(err, "Failed to register a consumer")
 
@@ -147,8 +154,9 @@ func (r *RabbitMQ) Consume(messageChannel chan amqp.Delivery, exchangeName, bind
 }
 
 func (r *RabbitMQ) Notify(message []byte, contentType string, exchange string, routingKey string) error {
-
-	err := r.Channel.Publish(
+     ctx := context.Background()
+	err := r.Channel.PublishWithContext(
+          ctx,
 		exchange,   // exchange
 		routingKey, // routing key
 		false,      // mandatory

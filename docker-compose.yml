@@ -49,8 +49,8 @@ services:
       - 9000:9000
       - 9001:9001
     environment:
-      MINIO_ACCESS_KEY: minio-access-key
-      MINIO_SECRET_KEY: minio-secret-key
+      MINIO_ACCESS_KEY: minio_access_key
+      MINIO_SECRET_KEY: minio_secret_key
       MINIO_ROOT_USER: new-minio-root-user
       MINIO_ROOT_PASSWORD: new-minio-root-password
     volumes:
@@ -90,7 +90,7 @@ services:
       test: ["CMD", "curl", "-f", "http://lake-controller:8000/healthz"]
       interval: 10s
       timeout: 1s
-      retries: 4
+      retries: 5
     networks:
       - invest-sense-network
 
@@ -107,8 +107,19 @@ services:
     networks:
       - invest-sense-network
 
+  lake-events:
+    image: fabiocaffarello/lake-events:latest
+    container_name: lake-events
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      lake-controller:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
   ingestors-file-downloader:
-    image: ingestors-file-downloader:latest
+    image: fabiocaffarello/ingestors-file-downloader:latest
     container_name: ingestors-file-downloader
     env_file:
       - .env
@@ -121,6 +132,96 @@ services:
         condition: service_healthy
     networks:
       - invest-sense-network
+
+  ingestors-file-unzipper:
+    image: fabiocaffarello/ingestors-file-unzipper:latest
+    container_name: ingestors-file-unzipper
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    depends_on:
+      - cadvisor
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./.docker/observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - invest-sense-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - invest-sense-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    user: root
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - invest-sense-network
+
+  trino:
+    hostname: trino
+    container_name: trino
+    image: 'trinodb/trino:351'
+    ports:
+      - '8085:8080'
+    volumes:
+      - ./.docker/trino/etc:/usr/lib/trino/etc:ro
+    networks:
+      - invest-sense-network
+
+  mariadb:
+    hostname: mariadb
+    image: mariadb:10.5.8
+    container_name: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: metastore_db
+    networks:
+      - invest-sense-network
+
+  hive-metastore:
+    hostname: hive-metastore
+    image: 'bitsondatadev/hive-metastore:latest'
+    container_name: hive-metastore
+    ports:
+      - '9083:9083' # Metastore Thrift
+    volumes:
+      - ./.docker/hive/conf/metastore-site.xml:/opt/apache-hive-metastore-3.0.0-bin/conf/metastore-site.xml:ro
+    environment:
+      METASTORE_DB_HOSTNAME: mariadb
+    depends_on:
+      - mariadb
+    networks:
+      - invest-sense-network
+
 
 networks:
   invest-sense-network:

@@ -1,17 +1,53 @@
 
-POST http://localhost:8001/service/file-downloader/source/cnep HTTP/1.1
+POST http://localhost:8001/service/file-downloader/source/ceaf HTTP/1.1
 Content-Type: application/json
 
 {
   "data": {
     "reference": {
       "year": 2023,
-      "month": 8,
-      "day": 28
+      "month": 9,
+      "day": 11
     }
   }
 }
 
 ###
 
-GET http://localhost:8001/service/file-downloader HTTP/1.1
+GET http://localhost:8001/service/file-unzipper HTTP/1.1
+
+###
+
+POST http://localhost:8001/staging-jobs HTTP/1.1
+Content-Type: application/json
+
+{
+  "input_id": "508f8c014e9a273c13d2b75960826501",
+  "input": {
+    "reference": {
+      "year": 2023,
+      "month": 8,
+      "day": 31
+    }
+  },
+  "source": "ceaf",
+  "service": "file-downloader",
+  "processing_id": "94f62f57-6db9-49bf-bc63-e3077380ab5b"
+}
+
+###
+
+GET http://localhost:8001/staging-jobs/service/file-downloader/source/cnep/da157ea561e6245d300476ff89fb0b94 HTTP/1.1
+
+###
+
+POST http://localhost:8001/service/file-downloader/source/ceaf/7e428decddefa839fc9edd07c86a249a HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": "7e428decddefa839fc9edd07c86a249a",
+  "status": {
+    "code": 1,
+    "detail": ""
+  }
+}

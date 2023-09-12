@@ -2,6 +2,7 @@ package usecase
 
 import (
      "apps/lake-orchestration/lake-repository/internal/entity"
+     outputDTO "libs/dtos/golang/dto-repository/output"
 )
 
 type ListOneSchemaByIdUseCase struct {
@@ -16,13 +17,13 @@ func NewListOneSchemaByIdUseCase(
      }
 }
 
-func (la *ListOneSchemaByIdUseCase) Execute(id string) (SchemaOutputDTO, error) {
+func (la *ListOneSchemaByIdUseCase) Execute(id string) (outputDTO.SchemaDTO, error) {
      item, err := la.SchemaRepository.FindOneById(id)
      if err != nil {
-          return SchemaOutputDTO{}, err
+          return outputDTO.SchemaDTO{}, err
      }
 
-     dto := SchemaOutputDTO{
+     dto := outputDTO.SchemaDTO{
           ID:         string(item.ID),
           SchemaType: item.SchemaType,
           Service:    item.Service,

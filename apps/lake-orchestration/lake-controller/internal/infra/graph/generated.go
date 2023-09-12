@@ -49,6 +49,7 @@ type ComplexityRoot struct {
 		Context           func(childComplexity int) int
 		CreatedAt         func(childComplexity int) int
 		DependsOn         func(childComplexity int) int
+		Frequency         func(childComplexity int) int
 		ID                func(childComplexity int) int
 		JobParameters     func(childComplexity int) int
 		Name              func(childComplexity int) int
@@ -117,6 +118,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Config.DependsOn(childComplexity), true
+
+	case "Config.frequency":
+		if e.complexity.Config.Frequency == nil {
+			break
+		}
+
+		return e.complexity.Config.Frequency(childComplexity), true
 
 	case "Config.id":
 		if e.complexity.Config.ID == nil {
@@ -514,6 +522,50 @@ func (ec *executionContext) fieldContext_Config_active(ctx context.Context, fiel
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Config_frequency(ctx context.Context, field graphql.CollectedField, obj *model.Config) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Config_frequency(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Frequency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Config_frequency(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Config",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1007,6 +1059,8 @@ func (ec *executionContext) fieldContext_Mutation_createConfig(ctx context.Conte
 				return ec.fieldContext_Config_name(ctx, field)
 			case "active":
 				return ec.fieldContext_Config_active(ctx, field)
+			case "frequency":
+				return ec.fieldContext_Config_frequency(ctx, field)
 			case "service":
 				return ec.fieldContext_Config_service(ctx, field)
 			case "source":
@@ -2950,7 +3004,7 @@ func (ec *executionContext) unmarshalInputConfigInput(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "active", "service", "source", "context", "dependsOn", "serviceParameters", "jobParameters"}
+	fieldsInOrder := [...]string{"name", "active", "frequency", "service", "source", "context", "dependsOn", "serviceParameters", "jobParameters"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2975,6 +3029,15 @@ func (ec *executionContext) unmarshalInputConfigInput(ctx context.Context, obj i
 				return it, err
 			}
 			it.Active = data
+		case "frequency":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("frequency"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Frequency = data
 		case "service":
 			var err error
 
@@ -3104,6 +3167,11 @@ func (ec *executionContext) _Config(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "active":
 			out.Values[i] = ec._Config_active(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "frequency":
+			out.Values[i] = ec._Config_frequency(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

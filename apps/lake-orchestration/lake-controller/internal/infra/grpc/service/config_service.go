@@ -5,6 +5,9 @@ import (
 	"apps/lake-orchestration/lake-controller/internal/usecase"
 	"context"
 
+	inputDTO "libs/dtos/golang/dto-controller/input"
+	sharedDTO "libs/dtos/golang/dto-controller/shared"
+
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -47,10 +50,10 @@ func toMapAny(req map[string]interface{}) map[string]*anypb.Any {
 	return res
 }
 
-func convertDependsOn(pbDependsOn []*pb.DependsOn) []usecase.JobDependencies {
-	jobDependsOn := make([]usecase.JobDependencies, 0, len(pbDependsOn))
+func convertDependsOn(pbDependsOn []*pb.DependsOn) []sharedDTO.JobDependencies {
+	jobDependsOn := make([]sharedDTO.JobDependencies, 0, len(pbDependsOn))
 	for _, pbDep := range pbDependsOn {
-		jobDep := usecase.JobDependencies{
+		jobDep := sharedDTO.JobDependencies{
 			Service: pbDep.Service,
 			Source:  pbDep.Source,
 		}
@@ -59,7 +62,7 @@ func convertDependsOn(pbDependsOn []*pb.DependsOn) []usecase.JobDependencies {
 	return jobDependsOn
 }
 
-func ConvertJobDependenciesToPbDependsOn(jobDeps []usecase.JobDependencies) []*pb.DependsOn {
+func ConvertJobDependenciesToPbDependsOn(jobDeps []sharedDTO.JobDependencies) []*pb.DependsOn {
 	pbDeps := make([]*pb.DependsOn, len(jobDeps))
 	for i, jobDep := range jobDeps {
 		pbDeps[i] = &pb.DependsOn{
@@ -71,9 +74,10 @@ func ConvertJobDependenciesToPbDependsOn(jobDeps []usecase.JobDependencies) []*p
 }
 
 func (s *ConfigService) CreateConfig(ctx context.Context, in *pb.CreateConfigRequest) (*pb.CreateConfigResponse, error) {
-	dto := usecase.ConfigInputDTO{
+	dto := inputDTO.ConfigDTO{
 		Name:              in.Name,
 		Active:            in.Active,
+		Frequency:         in.Frequency,
 		Service:           in.Service,
 		Source:            in.Source,
 		Context:           in.Context,
@@ -89,6 +93,7 @@ func (s *ConfigService) CreateConfig(ctx context.Context, in *pb.CreateConfigReq
 	return &pb.CreateConfigResponse{
 		Id:                output.ID,
 		Active:            output.Active,
+		Frequency:         output.Frequency,
 		Service:           output.Service,
 		Source:            output.Source,
 		Context:           output.Context,

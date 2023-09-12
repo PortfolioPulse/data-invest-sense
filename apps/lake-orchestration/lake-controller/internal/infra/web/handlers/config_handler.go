@@ -4,6 +4,7 @@ import (
 	"apps/lake-orchestration/lake-controller/internal/entity"
 	"apps/lake-orchestration/lake-controller/internal/usecase"
 	"encoding/json"
+	inputDTO "libs/dtos/golang/dto-controller/input"
 	"libs/golang/events"
 	"net/http"
 
@@ -29,7 +30,7 @@ func NewWebConfigHandler(
 }
 
 func (h *WebConfigHandler) CreateConfig(w http.ResponseWriter, r *http.Request) {
-	var dto usecase.ConfigInputDTO
+	var dto inputDTO.ConfigDTO
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -90,19 +91,59 @@ func (h *WebConfigHandler) ListOneConfigById(w http.ResponseWriter, r *http.Requ
 }
 
 func (h *WebConfigHandler) ListAllConfigsByService(w http.ResponseWriter, r *http.Request) {
-     service := chi.URLParam(r, "service")
-     listAllConfigsByService := usecase.NewListAllConfigsByServiceUseCase(
-          h.ConfigRepository,
-     )
+	service := chi.URLParam(r, "service")
+	listAllConfigsByService := usecase.NewListAllConfigsByServiceUseCase(
+		h.ConfigRepository,
+	)
 
-     output, err := listAllConfigsByService.Execute(service)
-     if err != nil {
-          http.Error(w, err.Error(), http.StatusInternalServerError)
-          return
-     }
-     err = json.NewEncoder(w).Encode(output)
-     if err != nil {
-          http.Error(w, err.Error(), http.StatusInternalServerError)
-          return
-     }
+	output, err := listAllConfigsByService.Execute(service)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *WebConfigHandler) ListAllConfigsByServiceAndContext(w http.ResponseWriter, r *http.Request) {
+	service := chi.URLParam(r, "service")
+	contextEnv := chi.URLParam(r, "context")
+
+	listAllConfigsByServiceAndContext := usecase.NewListAllConfigsByServiceAndContextUseCase(
+		h.ConfigRepository,
+	)
+
+	output, err := listAllConfigsByServiceAndContext.Execute(service, contextEnv)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *WebConfigHandler) ListAllConfigsByDependentJob(w http.ResponseWriter, r *http.Request) {
+	service := chi.URLParam(r, "service")
+	source := chi.URLParam(r, "source")
+
+	listAllConfigsByDependentJob := usecase.NewListAllConfigsByDependentJobUseCase(
+		h.ConfigRepository,
+	)
+
+	output, err := listAllConfigsByDependentJob.Execute(service, source)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

@@ -23,6 +23,11 @@ class AsyncPyControllerClient:
         endpoint = f"/configs/service/{service_name}"
         return await self.client.make_request("GET", endpoint)
 
+
+    async def list_all_configs_by_service_and_context(self, service_name, context):
+        endpoint = f"/configs/service/{service_name}/context/{context}"
+        return await self.client.make_request("GET", endpoint)
+
 def async_pycontroller_client():
     sd = new_from_env()
     return AsyncPyControllerClient(sd.lake_controller_endpoint())

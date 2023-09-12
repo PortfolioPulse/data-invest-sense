@@ -9,6 +9,7 @@ type Config {
   id: ID!
   name: String!
   active: Boolean!
+  frequency: String!
   service: String!
   source: String!
   context: String!
@@ -27,6 +28,7 @@ input JobDependenciesInput {
 input ConfigInput {
   name: String!
   active: Boolean!
+  frequency: String!
   service: String!
   source: String!
   context: String!

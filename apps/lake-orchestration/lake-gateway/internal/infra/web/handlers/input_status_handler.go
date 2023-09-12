@@ -31,7 +31,7 @@ func NewWebInputStatusHandler(
 func (h *WebInputStatusHandler) UpdateStatus(w http.ResponseWriter, r *http.Request) {
      service := chi.URLParam(r, "service")
      // source := chi.URLParam(r, "source")
-     id := chi.URLParam(r, "id")
+     // id := chi.URLParam(r, "id")
 
      var dto usecase.InputStatusInputDTO
      err := json.NewDecoder(r.Body).Decode(&dto)
@@ -39,7 +39,6 @@ func (h *WebInputStatusHandler) UpdateStatus(w http.ResponseWriter, r *http.Requ
           http.Error(w, err.Error(), http.StatusBadRequest)
           return
      }
-     dto.ID = id
      updateStatusInput := usecase.NewUpdateStatusInputUseCase(
           h.InputRepository,
           h.InputUpdatedEvent,

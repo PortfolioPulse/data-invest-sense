@@ -1,13 +1,6 @@
-package usecase
+package output
 
-type SchemaInputDTO struct {
-	SchemaType string                 `json:"schema_type"`
-	Service    string                 `json:"service"`
-	Source     string                 `json:"source"`
-	JsonSchema map[string]interface{} `json:"json_schema"`
-}
-
-type SchemaOutputDTO struct {
+type SchemaDTO struct {
 	ID         string                 `json:"id"`
 	SchemaType string                 `json:"schema_type"`
 	Service    string                 `json:"service"`

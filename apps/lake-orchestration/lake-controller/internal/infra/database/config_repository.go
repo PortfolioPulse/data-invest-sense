@@ -48,17 +48,18 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	if err != nil {
 		// Insert new document
 		_, err := cr.Collection.InsertOne(context.Background(), bson.M{
-			"id":                config.ID,
-			"name":              config.Name,
-			"active":            config.Active,
-			"service":           config.Service,
-			"source":            config.Source,
-			"context":           config.Context,
-			"dependsOn":         config.DependsOn,
-			"serviceParamaters": config.ServiceParamaters,
-			"jobParameters":     config.JobParameters,
-			"created_at":        config.CreatedAt,
-			"updated_at":        config.UpdatedAt,
+			"id":                 config.ID,
+			"name":               config.Name,
+			"active":             config.Active,
+			"frequency":          config.Frequency,
+			"service":            config.Service,
+			"source":             config.Source,
+			"context":            config.Context,
+			"depends_on":         config.DependsOn,
+			"service_parameters": config.ServiceParameters,
+			"job_parameters":     config.JobParameters,
+			"created_at":         config.CreatedAt,
+			"updated_at":         config.UpdatedAt,
 		})
 		if err != nil {
 			return err
@@ -67,16 +68,17 @@ func (cr *ConfigRepository) SaveConfig(config *entity.Config) error {
 	}
 	// Update existing document
 	_, err = cr.Collection.UpdateOne(context.Background(), bson.M{"id": config.ID}, bson.M{"$set": bson.M{
-		"name":              config.Name,
-		"active":            config.Active,
-		"service":           config.Service,
-		"source":            config.Source,
-		"context":           config.Context,
-		"dependsOn":         config.DependsOn,
-		"serviceParamaters": config.ServiceParamaters,
-		"jobParameters":     config.JobParameters,
-		"created_at":        existingConfig.CreatedAt,
-		"updated_at":        config.UpdatedAt,
+		"name":               config.Name,
+		"active":             config.Active,
+		"frequency":          config.Frequency,
+		"service":            config.Service,
+		"source":             config.Source,
+		"context":            config.Context,
+		"depends_on":         config.DependsOn,
+		"service_parameters": config.ServiceParameters,
+		"job_parameters":     config.JobParameters,
+		"created_at":         existingConfig.CreatedAt,
+		"updated_at":         config.UpdatedAt,
 	}})
 	if err != nil {
 		return err
@@ -127,10 +129,68 @@ func (cr *ConfigRepository) FindAllByService(service string) ([]*entity.Config, 
 	return results, nil
 }
 
+func (cr *ConfigRepository) FindAllByServiceAndContext(service string, contextEnv string) ([]*entity.Config, error) {
+     filter := bson.M{
+          "service": service,
+          "context": contextEnv,
+     }
+     cursor, err := cr.Collection.Find(context.Background(), filter)
+     if err != nil {
+          return nil, err
+     }
+     defer cursor.Close(context.Background())
+
+     var results []*entity.Config
+     for cursor.Next(context.Background()) {
+          var result entity.Config
+          if err := cursor.Decode(&result); err != nil {
+               return nil, err
+          }
+          results = append(results, &result)
+     }
+     if err := cursor.Err(); err != nil {
+          return nil, err
+     }
+     return results, nil
+}
+
 func (cr *ConfigRepository) FindOneById(id string) (*entity.Config, error) {
 	result, err := cr.getOneById(id)
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
+}
+
+func (cr *ConfigRepository) FindAllByDependentJod(service string, source string) ([]*entity.Config, error) {
+	filter := bson.M{
+		"depends_on": bson.M{
+			"$elemMatch": bson.M{
+				"service": service,
+				"source":  source,
+			},
+		},
+	}
+	cursor, err := cr.Collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	defer cursor.Close(context.Background())
+
+	var results []*entity.Config
+
+	for cursor.Next(context.Background()) {
+		var result entity.Config
+		if err := cursor.Decode(&result); err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }

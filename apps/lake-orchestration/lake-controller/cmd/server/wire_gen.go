@@ -35,6 +35,12 @@ func NewWebConfigHandler(client *mongo.Client, eventDispatcher events.EventDispa
 	return webConfigHandler
 }
 
+func NewWebProcessingJobDependenciesHandler(client *mongo.Client, database2 string) *handlers.WebProcessingJobDependenciesHandler {
+	processingJobDependenciesRepository := database.NewProcessingJobDependenciesRepository(client, database2)
+	webProcessingJobDependenciesHandler := handlers.NewWebProcessingJobDependenciesHandler(processingJobDependenciesRepository)
+	return webProcessingJobDependenciesHandler
+}
+
 func NewHealthzHandler() *handlers.WebHealthzHandler {
 	webHealthzHandler := handlers.NewWebHealthzHandler()
 	return webHealthzHandler
@@ -45,6 +51,12 @@ func NewHealthzHandler() *handlers.WebHealthzHandler {
 var setConfigRepositoryDependency = wire.NewSet(database.NewConfigRepository, wire.Bind(
 	new(entity.ConfigInterface),
 	new(*database.ConfigRepository),
+),
+)
+
+var setProcessingJobDependenciesRepositoryDependency = wire.NewSet(database.NewProcessingJobDependenciesRepository, wire.Bind(
+	new(entity.ProcessingJobDependenciesInterface),
+	new(*database.ProcessingJobDependenciesRepository),
 ),
 )
 

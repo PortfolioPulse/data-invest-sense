@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"apps/lake-orchestration/lake-controller/internal/entity"
+	outputDTO "libs/dtos/golang/dto-controller/output"
 )
 
 type ListOneConfigByIdUseCase struct {
@@ -16,21 +17,22 @@ func NewListOneConfigByIdUseCase(
 	}
 }
 
-func (la *ListOneConfigByIdUseCase) Execute(id string) (ConfigOutputDTO, error) {
+func (la *ListOneConfigByIdUseCase) Execute(id string) (outputDTO.ConfigDTO, error) {
 	item, err := la.ConfigRepository.FindOneById(id)
 	if err != nil {
-		return ConfigOutputDTO{}, err
+		return outputDTO.ConfigDTO{}, err
 	}
 
-	dto := ConfigOutputDTO{
+	dto := outputDTO.ConfigDTO{
 		ID:                string(item.ID),
 		Name:              item.Name,
 		Active:            item.Active,
+		Frequency:         item.Frequency,
 		Service:           item.Service,
 		Source:            item.Source,
 		Context:           item.Context,
 		DependsOn:         ConvertEntityToUsecaseDependencies(item.DependsOn),
-		ServiceParameters: item.ServiceParamaters,
+		ServiceParameters: item.ServiceParameters,
 		JobParameters:     item.JobParameters,
 		CreatedAt:         item.CreatedAt,
 		UpdatedAt:         item.UpdatedAt,

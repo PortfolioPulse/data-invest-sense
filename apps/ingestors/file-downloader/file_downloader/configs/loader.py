@@ -1,48 +1,26 @@
-# FIXME: This is a temporary solution. We need to find a better way to load configs.
-import json
-from dataclasses import dataclass, field
-from pydotenv.dotenv import DotEnvLoader
-from pathlib import Path
-from typing import Dict, Any
-import asyncio
+import os
+from typing import Dict
 from pylog.log import setup_logging
+from pyrepository.interfaces.ingestors.dtos import Config, JobParams, JobMetadataParams
 from pycontroller.client import async_pycontroller_client
 
 logger = setup_logging(__name__)
-
-@dataclass
-class JobMetadataParams:
-    _id: str
-    name: str
-    context: str
-    source: str
-    service: str
-
-@dataclass
-class JobParams:
-    jobHandler: str
-    active: bool
-    url: str
-
-@dataclass
-class Config:
-    jobMetadataParams: JobMetadataParams
-    jobParams: JobParams
 
 
 class SetConfigParams:
 
     def set_job_params(self, configRaw):
         return JobParams(
-            jobHandler=configRaw["serviceParameters"]["jobHandler"],
-            active=configRaw["active"],
-            url=configRaw["jobParameters"]["url"],
+            jobHandler=configRaw["service_parameters"]["job_handler"],
+            url=configRaw["job_parameters"]["url"],
         )
 
     def set_job_metadata_params(self, configRaw):
         return JobMetadataParams(
             _id=configRaw["id"],
             name=configRaw["name"],
+            active=configRaw["active"],
+            frequency=configRaw["frequency"],
             context=configRaw["context"],
             source=configRaw["source"],
             service=configRaw["service"],
@@ -53,9 +31,11 @@ class ConfigLoader(SetConfigParams):
     def __init__(self) -> None:
         super().__init__()
 
-    async def fetch_configs_for_service(self, service_name: str):
+    async def fetch_configs_for_service(self, service_name: str, context: str):
         client = async_pycontroller_client()
-        configs = await client.list_all_configs_by_service(service_name)
+        configs = await client.list_all_configs_by_service_and_context(service_name, context)
+        logger.info(f"Found {len(configs)} configs for service '{service_name}' and context '{context}'")
+        logger.info(f"Configs: {configs}")
         for config in configs:
             registered_config = Config(
                 jobMetadataParams=self.set_job_metadata_params(config),
@@ -81,6 +61,7 @@ def register_config(context: str, config_id: str, config: Config):
 
 
 async def fetch_configs():
-    service = "file-downloader"
-    await ConfigLoader().fetch_configs_for_service(service_name=service)
+    service = os.getenv("SERVICE_NAME")
+    context = os.getenv("CONTEXT_ENV")
+    await ConfigLoader().fetch_configs_for_service(service_name=service, context=context)
     return mapping_config

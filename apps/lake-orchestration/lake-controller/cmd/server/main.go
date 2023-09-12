@@ -47,45 +47,52 @@ func main() {
 	})
 
 	createConfigUseCase := NewCreateConfigUseCase(client, eventDispatcher, configs.DBName)
-     healthzUseCase := NewHealthzHandler()
+	healthzUseCase := NewHealthzHandler()
 
 	// Web
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 
 	webConfigHandler := NewWebConfigHandler(client, eventDispatcher, configs.DBName)
+     webProcessingJobDependenciesHandler := NewWebProcessingJobDependenciesHandler(client, configs.DBName)
 
 	webserver.AddHandler("/configs", "POST", "/configs", webConfigHandler.CreateConfig)
-     webserver.AddHandler("/configs", "GET", "/configs", webConfigHandler.ListAllConfigs)
-     webserver.AddHandler("/configs", "GET", "/configs/{id}", webConfigHandler.ListOneConfigById)
-     webserver.AddHandler("/configs", "GET", "/configs/service/{service}", webConfigHandler.ListAllConfigsByService)
+	webserver.AddHandler("/configs", "GET", "/configs", webConfigHandler.ListAllConfigs)
+	webserver.AddHandler("/configs", "GET", "/configs/{id}", webConfigHandler.ListOneConfigById)
+	webserver.AddHandler("/configs", "GET", "/configs/service/{service}", webConfigHandler.ListAllConfigsByService)
+	webserver.AddHandler("/configs", "GET", "/configs/service/{service}/context/{context}", webConfigHandler.ListAllConfigsByServiceAndContext)
+	webserver.AddHandler("/configs", "GET", "/configs/service/{service}/source/{source}", webConfigHandler.ListAllConfigsByDependentJob)
+     webserver.AddHandler("/configs", "POST", "/jobs-dependencies", webProcessingJobDependenciesHandler.CreateProcessingJobDependenciesHandler)
+     webserver.AddHandler("/configs", "GET", "/jobs-dependencies/{id}", webProcessingJobDependenciesHandler.ListOneProcessingJobDependenciesByIdHandler)
+     webserver.AddHandler("/configs", "DELETE", "/jobs-dependencies/{id}", webProcessingJobDependenciesHandler.RemoveProcessingJobDependenciesHandler)
+     webserver.AddHandler("/configs", "POST", "/jobs-dependencies/{id}", webProcessingJobDependenciesHandler.UpdateProcessingJobDependenciesHandler)
 
-     webserver.HandleHealthz(healthzUseCase.Healthz)
+	webserver.HandleHealthz(healthzUseCase.Healthz)
 
 	fmt.Println("Server is running on port", configs.WebServerPort)
 	go webserver.Start()
 
-     // gRPC
-     grpcServer := grpc.NewServer()
-     createConfigService := service.NewConfigService(*createConfigUseCase)
-     pb.RegisterConfigServiceServer(grpcServer, createConfigService)
-     reflection.Register(grpcServer)
+	// gRPC
+	grpcServer := grpc.NewServer()
+	createConfigService := service.NewConfigService(*createConfigUseCase)
+	pb.RegisterConfigServiceServer(grpcServer, createConfigService)
+	reflection.Register(grpcServer)
 
-     fmt.Println("gRPC server is running on port", configs.GRPCServerPort)
-     lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
-     if err != nil {
-          panic(err)
-     }
-     go grpcServer.Serve(lis)
+	fmt.Println("gRPC server is running on port", configs.GRPCServerPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
+	if err != nil {
+		panic(err)
+	}
+	go grpcServer.Serve(lis)
 
-     // GraphQL
-     srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-          CreateConfigUseCase: *createConfigUseCase,
-     }}))
-     http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-     http.Handle("/query", srv)
+	// GraphQL
+	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		CreateConfigUseCase: *createConfigUseCase,
+	}}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
 
-     fmt.Println("GraphQL server is running on port", configs.GraphQLServerPort)
-     http.ListenAndServe(fmt.Sprintf(":%s", configs.GraphQLServerPort), nil)
+	fmt.Println("GraphQL server is running on port", configs.GraphQLServerPort)
+	http.ListenAndServe(fmt.Sprintf(":%s", configs.GraphQLServerPort), nil)
 
 }
 

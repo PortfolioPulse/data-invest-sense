@@ -16,6 +16,10 @@ type EventHandlerInterface interface {
 	Handle(event EventInterface, wg *sync.WaitGroup, exchangeName string, routingKey string)
 }
 
+type EventListenerInterface interface {
+     Handle(event EventInterface, wg *sync.WaitGroup)
+}
+
 type EventDispatcherInterface interface {
 	Register(eventName string, handler EventHandlerInterface) error
 	Dispatch(event EventInterface, exchangeName string, routingKey string) error

@@ -53,9 +53,9 @@ func main() {
 	webSchemaHandler := NewWebSchemaHandler(client, eventDispatcher, configs.DBName)
 
 	webserver.AddHandler("/schemas", "POST", "/schemas", webSchemaHandler.CreateSchema)
-     webserver.AddHandler("/schemas", "GET", "/schemas", webSchemaHandler.ListAllSchemas)
-     webserver.AddHandler("/schemas", "GET", "/schemas/{id}", webSchemaHandler.ListOneSchemaById)
-     webserver.AddHandler("/schemas", "GET", "/schemas/service/{service}", webSchemaHandler.ListAllSchemasByService)
+	webserver.AddHandler("/schemas", "GET", "/schemas", webSchemaHandler.ListAllSchemas)
+	webserver.AddHandler("/schemas", "GET", "/schemas/{id}", webSchemaHandler.ListOneSchemaById)
+	webserver.AddHandler("/schemas", "GET", "/schemas/service/{service}", webSchemaHandler.ListAllSchemasByService)
 
 	fmt.Println("Server is running on port", configs.WebServerPort)
 	go webserver.Start()
@@ -66,22 +66,22 @@ func main() {
 	pb.RegisterSchemaServiceServer(grpcServer, createSchemaService)
 	reflection.Register(grpcServer)
 
-     fmt.Println("gRPC Server is running on port", configs.GRPCServerPort)
+	fmt.Println("gRPC Server is running on port", configs.GRPCServerPort)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
 	if err != nil {
 		panic(err)
 	}
 	go grpcServer.Serve(lis)
 
-     // GraphQL
-     srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-          CreateSchemaUseCase: *createSchemaUseCase,
-     }}))
-     http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-     http.Handle("/query", srv)
+	// GraphQL
+	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		CreateSchemaUseCase: *createSchemaUseCase,
+	}}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
 
-     fmt.Println("GraphQL Server is running on port", configs.GraphQLServerPort)
-     http.ListenAndServe(fmt.Sprintf(":%s", configs.GraphQLServerPort), nil)
+	fmt.Println("GraphQL Server is running on port", configs.GraphQLServerPort)
+	http.ListenAndServe(fmt.Sprintf(":%s", configs.GraphQLServerPort), nil)
 
 }
 

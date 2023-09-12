@@ -9,7 +9,7 @@ type ConfigCreated struct {
 
 func NewConfigCreated() *ConfigCreated {
 	return &ConfigCreated{
-		Name: "InputCreated",
+		Name: "ConfigCreated",
 	}
 }
 

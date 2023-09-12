@@ -9,17 +9,16 @@ class BaseRabbitMQ:
     def __init__(self, url):
         self.url = url
         self.connection = None
-        self.channel = None
+        self.exchange = None
 
     async def _connect(self):
         parsed_url = urllib.parse.urlparse(self.url)
-        self.connection = await aio_pika.connect_robust(
+        self.connection = await aio_pika.connect(
             host=parsed_url.hostname,
             port=parsed_url.port,
             login=parsed_url.username,
             password=parsed_url.password,
         )
-        self.channel = await self.connection.channel()
 
     async def connect(self):
         while True:
@@ -35,21 +34,35 @@ class BaseRabbitMQ:
         logger.error(f"Connection error: {error}")
         logger.error(f"Connection parameters: {self.url}")
 
-    async def declare_exchange(self, exchange_name):
-        return await self.channel.declare_exchange(
-            exchange_name, aio_pika.ExchangeType.DIRECT, durable=True
+    async def create_channel(self):
+        channel = await self.connection.channel()
+        await channel.set_qos(prefetch_count=1)
+        return channel
+
+    async def declare_exchange(self, channel, exchange_name):
+        self.exchange = await channel.declare_exchange(
+            exchange_name, aio_pika.ExchangeType.TOPIC, durable=True
         )
 
-    async def create_queue(self, queue_name, exchange_name, routing_key):
-        await self.channel.set_qos(prefetch_count=1)
-
-        exchange = await self.declare_exchange(exchange_name)
-
-        queue = await self.channel.declare_queue(queue_name, durable=True)
-        await queue.bind(exchange, routing_key)
+    async def create_queue(self, channel, queue_name, exchange_name, routing_key):
+        await self.declare_exchange(channel, exchange_name)
+        queue = await channel.declare_queue(queue_name, durable=True)
+        await queue.bind(self.exchange, routing_key)
 
         return queue
 
     async def close_connection(self):
-        await self.channel.close()
         await self.connection.close()
+
+    async def publish_message(self, exchange_name, routing_key, message):
+        try:
+            await self.exchange.publish(
+                aio_pika.Message(
+                    body=message.encode(),
+                    delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                ),
+                routing_key=routing_key,
+            )
+            logger.info(f"Published message to exchange '{exchange_name}' with routing key '{routing_key}'")
+        except Exception as e:
+            logger.error(f"Error while publishing message: {e}")

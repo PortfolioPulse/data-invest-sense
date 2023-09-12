@@ -113,7 +113,7 @@ func (ir *InputRepository) FindAllByService(service string) ([]*entity.Input, er
 }
 
 func (ir *InputRepository) FindAllByServiceAndSource(service string, source string) ([]*entity.Input, error) {
-	collection := ir.Client.Database(ir.Database).Collection(service)
+     collection := ir.Client.Database(ir.Database).Collection(service)
 
 	filter := bson.M{"metadata.source": source}
 	cursor, err := collection.Find(context.Background(), filter)
