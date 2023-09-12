@@ -23,4 +23,5 @@ use (
 	libs/golang/go-request
 	libs/golang/goid
 	libs/golang/service-discovery
+	libs/storage-client/golang/go-minio
 )

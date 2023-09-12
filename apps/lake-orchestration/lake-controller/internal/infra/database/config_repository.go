@@ -129,6 +129,31 @@ func (cr *ConfigRepository) FindAllByService(service string) ([]*entity.Config, 
 	return results, nil
 }
 
+func (cr *ConfigRepository) FindAllByServiceAndContext(service string, contextEnv string) ([]*entity.Config, error) {
+     filter := bson.M{
+          "service": service,
+          "context": contextEnv,
+     }
+     cursor, err := cr.Collection.Find(context.Background(), filter)
+     if err != nil {
+          return nil, err
+     }
+     defer cursor.Close(context.Background())
+
+     var results []*entity.Config
+     for cursor.Next(context.Background()) {
+          var result entity.Config
+          if err := cursor.Decode(&result); err != nil {
+               return nil, err
+          }
+          results = append(results, &result)
+     }
+     if err := cursor.Err(); err != nil {
+          return nil, err
+     }
+     return results, nil
+}
+
 func (cr *ConfigRepository) FindOneById(id string) (*entity.Config, error) {
 	result, err := cr.getOneById(id)
 	if err != nil {

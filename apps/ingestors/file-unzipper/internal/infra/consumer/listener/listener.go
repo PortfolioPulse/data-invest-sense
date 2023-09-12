@@ -1,11 +1,11 @@
 package listener
 
 import (
+	"libs/golang/go-rabbitmq/queue"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type MessageHandlerInterface interface {
-	Handle(msg amqp.Delivery) error
+	Handle(rabbitMQ *queue.RabbitMQ, exchange string, msg amqp.Delivery) error
 }
-
-

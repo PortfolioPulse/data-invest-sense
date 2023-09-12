@@ -104,6 +104,7 @@ func (l *ServiceFeedbackListener) HandleFeedback200(msg eventsInputDTO.ServiceFe
 	inputDTO := gatewayInputDTO.InputDTO{
 		Data: map[string]interface{}{
 			"uri": msg.Data["documentUri"],
+               "partition": msg.Data["partition"],
 		},
 	}
 

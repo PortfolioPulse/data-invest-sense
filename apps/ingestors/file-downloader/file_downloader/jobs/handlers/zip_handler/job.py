@@ -47,7 +47,7 @@ class Job(Handler):
         return self.job_params.url.format(reference)
 
     def _get_bucket_name(self):
-        return "raw-{context}-source-{source}".format(
+        return "landing-{context}-source-{source}".format(
             context=self.job_metadata_params.context,
             source=self.job_metadata_params.source,
         )
@@ -82,10 +82,7 @@ class Job(Handler):
         logger.info(f"Job triggered with input: {input}")
         response = self.make_request(input)
         minio = minio_client()
-        uri = minio.upload_bytes(self._get_bucket_name(), "test-object", response.content)
+        partition = self._get_reference(input.reference)
+        uri = minio.upload_bytes(self._get_bucket_name(), f"{partition}/{self.job_metadata.source}.zip", response.content)
         logger.info(f"File storage uri: {uri}")
-        logger.info(f"Job completed with content: {response.content}")
-        logger.info(f"Job completed with headers: {response.headers}")
-        logger.info(f"Job completed with url: {response.url}")
-        logger.info(f"Job completed with status: {response.status_code}")
-        return {"documentUri": uri}, self._get_status(response)
+        return {"documentUri": uri, "partition": partition}, self._get_status(response)

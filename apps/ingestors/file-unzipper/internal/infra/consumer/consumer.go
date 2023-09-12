@@ -58,7 +58,7 @@ func (c *Consumer) RunConsumers() {
 func (c *Consumer) consumeMessages(config ConsumerConfig) {
 	for msg := range config.ConsumerChannel {
 		log.Printf("Received a message: %s", msg.Body)
-		err := config.Listener.Handle(msg)
+		err := config.Listener.Handle(c.RabbitMQ, c.Exchange, msg)
 		if err != nil {
 			log.Printf("Error handling message: %s", err)
 		} else {

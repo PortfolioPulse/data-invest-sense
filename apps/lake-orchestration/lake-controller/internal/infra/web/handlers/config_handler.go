@@ -108,6 +108,26 @@ func (h *WebConfigHandler) ListAllConfigsByService(w http.ResponseWriter, r *htt
 	}
 }
 
+func (h *WebConfigHandler) ListAllConfigsByServiceAndContext(w http.ResponseWriter, r *http.Request) {
+	service := chi.URLParam(r, "service")
+	contextEnv := chi.URLParam(r, "context")
+
+	listAllConfigsByServiceAndContext := usecase.NewListAllConfigsByServiceAndContextUseCase(
+		h.ConfigRepository,
+	)
+
+	output, err := listAllConfigsByServiceAndContext.Execute(service, contextEnv)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func (h *WebConfigHandler) ListAllConfigsByDependentJob(w http.ResponseWriter, r *http.Request) {
 	service := chi.URLParam(r, "service")
 	source := chi.URLParam(r, "source")

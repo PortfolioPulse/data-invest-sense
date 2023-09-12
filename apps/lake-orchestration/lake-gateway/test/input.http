@@ -7,14 +7,14 @@ Content-Type: application/json
     "reference": {
       "year": 2023,
       "month": 9,
-      "day": 2
+      "day": 11
     }
   }
 }
 
 ###
 
-GET http://localhost:8001/service/file-downloader HTTP/1.1
+GET http://localhost:8001/service/file-unzipper HTTP/1.1
 
 ###
 

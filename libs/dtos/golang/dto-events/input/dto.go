@@ -6,6 +6,6 @@ import (
 
 type ServiceFeedbackDTO struct {
 	Data     map[string]interface{} `json:"data"`
-	Metadata sharedDTO.Metadata               `json:"metadata"`
-	Status   sharedDTO.Status                 `json:"status"`
+	Metadata sharedDTO.Metadata     `json:"metadata"`
+	Status   sharedDTO.Status       `json:"status"`
 }

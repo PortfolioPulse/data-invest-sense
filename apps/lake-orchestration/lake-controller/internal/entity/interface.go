@@ -6,6 +6,7 @@ type ConfigInterface interface {
 	FindAllByService(service string) ([]*Config, error)
 	FindOneById(id string) (*Config, error)
 	FindAllByDependentJod(service string, source string) ([]*Config, error)
+     FindAllByServiceAndContext(service string, contextEnv string) ([]*Config, error)
 }
 
 type ProcessingJobDependenciesInterface interface {

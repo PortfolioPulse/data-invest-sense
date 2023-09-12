@@ -56,35 +56,6 @@ func (h *WebInputHandler) CreateInput(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func (h *WebInputHandler) CreateInputWithProcessingId(w http.ResponseWriter, r *http.Request) {
-//      service := chi.URLParam(r, "service")
-//      source := chi.URLParam(r, "source")
-//      processingId := chi.URLParam(r, "processingId")
-//      var dto usecase.InputInputDTO
-//      err := json.NewDecoder(r.Body).Decode(&dto)
-//      if err != nil {
-//           http.Error(w, err.Error(), http.StatusBadRequest)
-//           return
-//      }
-
-//      createInput := usecase.NewCreateInputWithProcessingIdUseCase(
-//           h.InputRepository,
-//           h.InputCreatedEvent,
-//           h.EventDispatcher,
-//      )
-
-//      output, err := createInput.Execute(dto, service, source, processingId)
-//      if err != nil {
-//           http.Error(w, err.Error(), http.StatusInternalServerError)
-//           return
-//      }
-//      err = json.NewEncoder(w).Encode(output)
-//      if err != nil {
-//           http.Error(w, err.Error(), http.StatusInternalServerError)
-//           return
-//      }
-// }
-
 func (h *WebInputHandler) ListAllByServiceAndSource(w http.ResponseWriter, r *http.Request) {
 	service := chi.URLParam(r, "service")
 	source := chi.URLParam(r, "source")

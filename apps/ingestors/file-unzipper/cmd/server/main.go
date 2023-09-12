@@ -1,23 +1,29 @@
 package main
 
 import (
+	"apps/ingestors/file-unzipper/internal/infra/consumer"
+	"apps/ingestors/file-unzipper/internal/infra/consumer/listener"
 	"libs/golang/go-config/configs"
+	"os"
 )
 
 const (
-     inputQueueName = "inputs-unzipper"
-     inputRountingKey = "file-unzipper.inputs.*"
+	inputQueueName   = "inputs-unzipper"
+	inputRountingKey = "file-unzipper.inputs.*"
 )
 
 func main() {
-     configs, err := configs.LoadConfig(".")
-     if err != nil {
-          panic(err)
-     }
+	configs, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
 
-     consumers := consumer.NewConsumer(configs)
-     inputListener := listener.NewServiceInputListener()
+	contextEnv := os.Getenv("CONTEXT_ENV")
+	serviceName := os.Getenv("SERVICE_NAME")
 
-     consumers.Register(inputQueueName, inputRountingKey, inputListener)
-     consumers.RunConsumers()
+	consumers := consumer.NewConsumer(configs)
+	inputListener := listener.NewServiceInputListener(contextEnv, serviceName)
+
+	consumers.Register(inputQueueName, inputRountingKey, inputListener)
+	consumers.RunConsumers()
 }

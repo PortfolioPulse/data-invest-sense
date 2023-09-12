@@ -119,7 +119,7 @@ services:
       - invest-sense-network
 
   ingestors-file-downloader:
-    image: ingestors-file-downloader:latest
+    image: fabiocaffarello/ingestors-file-downloader:latest
     container_name: ingestors-file-downloader
     env_file:
       - .env
@@ -127,6 +127,17 @@ services:
       rabbitmq:
         condition: service_healthy
       lake-controller:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - invest-sense-network
+
+  ingestors-file-unzipper:
+    image: fabiocaffarello/ingestors-file-unzipper:latest
+    container_name: ingestors-file-unzipper
+    depends_on:
+      rabbitmq:
         condition: service_healthy
       minio:
         condition: service_healthy

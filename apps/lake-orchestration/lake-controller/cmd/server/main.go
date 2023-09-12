@@ -59,6 +59,7 @@ func main() {
 	webserver.AddHandler("/configs", "GET", "/configs", webConfigHandler.ListAllConfigs)
 	webserver.AddHandler("/configs", "GET", "/configs/{id}", webConfigHandler.ListOneConfigById)
 	webserver.AddHandler("/configs", "GET", "/configs/service/{service}", webConfigHandler.ListAllConfigsByService)
+	webserver.AddHandler("/configs", "GET", "/configs/service/{service}/context/{context}", webConfigHandler.ListAllConfigsByServiceAndContext)
 	webserver.AddHandler("/configs", "GET", "/configs/service/{service}/source/{source}", webConfigHandler.ListAllConfigsByDependentJob)
      webserver.AddHandler("/configs", "POST", "/jobs-dependencies", webProcessingJobDependenciesHandler.CreateProcessingJobDependenciesHandler)
      webserver.AddHandler("/configs", "GET", "/jobs-dependencies/{id}", webProcessingJobDependenciesHandler.ListOneProcessingJobDependenciesByIdHandler)

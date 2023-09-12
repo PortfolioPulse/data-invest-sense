@@ -36,9 +36,7 @@ class Controller:
             await observer.post_event("check_config", self.__config)
             for listener_handler, result in observer.results.items():
                 logger.info(f"listener_handler: {listener_handler}")
-                # logger.info(f"result: {result}")
             job_data = JobHandler(self.__config).run(message)
-            # await asyncio.sleep(5)
             time.sleep(5)
             await self.__rabbitmq_service.publish_message(
                 "services",
